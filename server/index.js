@@ -21,7 +21,7 @@ connectDB();
 const app = express()
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["https://laforge-comics-616phbx92-james-projects-c571ef3f.vercel.app/","https://laforge-comics.vercel.app/"],
     methods: ["GET","DELETE","POST","PUT","PATCH"],
     allowedHeaders: "content-Type, Authorization",
     credentials: true

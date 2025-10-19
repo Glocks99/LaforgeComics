@@ -103,6 +103,12 @@ const Footer = () => {
           </div>
           <p className="text-sm text-gray-400 text-wrap overflow-hidden">contact@laforgecomics.com</p>
         </div>
+
+        {/* admin */}
+        <div className="">
+          <h4 className={`${darkMode ? "text-gray-800" : "text-white"} font-semibold mb-4 border-l-4 border-green-500 pl-2`}>Admin</h4>
+          <a href="/admin/Overview"></a>
+        </div>
       </div>
 
       <div className="border-t border-gray-700 text-sm text-center py-5 z-10 relative">

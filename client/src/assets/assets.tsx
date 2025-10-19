@@ -8,11 +8,6 @@ import vid1 from "./gif/vid1.gif";
 import vid2 from "./gif/vid2.gif";
 import vid3 from "./gif/vid3.gif";
 import lines from "./gif/lines.gif";
-import spon1 from "/assets/sponsors/afroComic.png";
-import spon2 from "/assets/sponsors/adidas.png";
-import spon3 from "/assets/sponsors/comicon.jpg";
-import spon4 from "/assets/sponsors/dc.png";
-import spon5 from "/assets/sponsors/marvel.png";
 
 export const assets = {
   logo,
@@ -24,10 +19,5 @@ export const assets = {
   vid1,
   vid2,
   vid3,
-  lines,
-  spon1,
-  spon2,
-  spon3,
-  spon4,
-  spon5,
+  lines
 };

@@ -107,7 +107,7 @@ const Footer = () => {
         {/* admin */}
         <div className="">
           <h4 className={`${darkMode ? "text-gray-800" : "text-white"} font-semibold mb-4 border-l-4 border-green-500 pl-2`}>Admin</h4>
-          <a href="/admin/Overview"></a>
+          <a href="/admin/Overview">dashboard</a>
         </div>
       </div>
 

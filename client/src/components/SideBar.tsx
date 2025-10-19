@@ -10,7 +10,7 @@ import { useAppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 
 const SideBar = () => {
-  const { isMenuOpen, setIsMenuOpen, user, logout, darkMode ,sendverifyEmail } =
+  const { isMenuOpen, setIsMenuOpen, user, logout, darkMode } =
     useAppContext();
 
   const links = [

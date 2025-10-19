@@ -34,7 +34,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
     tags: ""
   });
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>("");
+  const [_, setFileName] = useState<string>("");
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(false);
   const [genre, setGenre] = useState<Genre[]>([])

@@ -45,7 +45,7 @@ const ComicsTable: React.FC = () => {
   // --- Core lists & loading
   const [comics, setComics] = useState<Comic[]>([]);
   const [featured, setFeatured] = useState<Comic | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_, setIsLoading] = useState<boolean>(true);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
 

@@ -57,7 +57,7 @@ const FeedDetail = () => {
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [genre, setGenre] = useState<String[]>(["All"]);
+  const [, setGenre] = useState<String[]>(["All"]);
   const [filteredComics, setFilteredComics] = useState<Comics[]>([]);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [activeComicId, setActiveComicId] = useState<string | null>(null);
@@ -70,7 +70,7 @@ const FeedDetail = () => {
     user?.user?.id || parsedUser?._id || parsedUser?.id || null;
 
   // Infinite scroll states
-  const [page, setPage] = useState(1);
+  const [, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   const getGenres = async () => {

@@ -10,7 +10,7 @@ const ForgotPassword = () => {
     const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [isEmail, setIsEmail] = useState(false)
-    const [otp, setOtp] = useState("")
+    const [, setOtp] = useState("")
     const [isOtp, setIsOtp] = useState(false)
     const [newPassword, setNewPassword] = useState("")
 

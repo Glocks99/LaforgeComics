@@ -22,8 +22,8 @@ const app = express()
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://laforgecomics.onrender.com",
     "https://laforge-comics.vercel.app",
+    "https://laforgecomics.onrender.com",
 ]
 
 app.use(cors({
@@ -63,7 +63,8 @@ app.get("/", (req,res) => {
     res.send("server is running fine!")
 })
 
+const Port = process.env.PORT || 3000
 
-app.listen(3000, () => {
-    console.log(`server is running on port: ${process.env.PORT}`)
+app.listen(Port, () => {
+    console.log(`server is running on port`)
 })

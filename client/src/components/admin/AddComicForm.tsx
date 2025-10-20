@@ -23,7 +23,7 @@ type Genre = {
   name: string
 }
 
-const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+const API = import.meta.env.VITE_BackendURL || "http://localhost:3000";
 
 const AddComic = ({onclose}: {onclose: boolean}) => {
   const [comic, setComic] = useState<Comic>({

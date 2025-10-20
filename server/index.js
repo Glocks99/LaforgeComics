@@ -20,12 +20,24 @@ const viewRoutes = require("./routes/views.js")
 connectDB();
 const app = express()
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://laforgecomics.onrender.com",
+    "https://laforge-comics.vercel.app",
+]
+
 app.use(cors({
-    origin: ["https://laforge-comics-616phbx92-james-projects-c571ef3f.vercel.app/","https://laforge-comics.vercel.app/"],
-    methods: ["GET","DELETE","POST","PUT","PATCH"],
-    allowedHeaders: "content-Type, Authorization",
-    credentials: true
-}))
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
+app.options("*", cors());
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())

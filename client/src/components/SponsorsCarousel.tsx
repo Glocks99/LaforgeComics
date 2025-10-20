@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const sponsorData = [
   {
     logo: "https://upload.wikimedia.org/wikipedia/commons/7/75/Netflix_icon.svg",
@@ -46,9 +48,9 @@ const SponsorsCarousel = () => {
       <div className="relative overflow-hidden h-[140px] rounded-xl bg-white/10 border border-white/10 backdrop-blur-md shadow-lg">
         <div className="flex w-max animate-marquee items-center h-full gap-16 px-6">
           {[...sponsorData, ...sponsorData].map((sponsor, index) => (
-            <a
+            <Link
               key={index}
-              href={sponsor.url}
+              to={sponsor.url}
               target="_blank"
               rel="noopener noreferrer"
               title={`Visit ${sponsor.name}`}
@@ -62,7 +64,7 @@ const SponsorsCarousel = () => {
               <span className="mt-3 text-sm text-gray-200 font-medium backdrop-blur-md bg-black/30 px-3 py-1 rounded-full border border-white/10">
                 {sponsor.name}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

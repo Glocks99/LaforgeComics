@@ -88,12 +88,12 @@ const BrowseByGenre = () => {
           <h2 className={`${darkMode ? "text-gray-800" : "text-white"} text-3xl sm:text-4xl font-extrabold drop-shadow`}>
             📚 Browse by Genre
           </h2>
-          <a
-            href="/comics"
+          <Link
+            to="/comics"
             className="text-blue-400 hover:underline font-semibold transition"
           >
             View All →
-          </a>
+          </Link>
         </div>
 
         {/* Genre Filters */}

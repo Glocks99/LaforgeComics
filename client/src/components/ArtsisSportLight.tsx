@@ -4,6 +4,7 @@ import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useAppContext } from "../context/AppContext";
+import { Link } from "react-router-dom";
 
 type Work = {
   artist: string;
@@ -139,12 +140,12 @@ const ArtistSpotlight = () => {
                     </div>
 
                     {/* View Profile */}
-                    <a
-                      href={`/artist/${artist?._id}`}
+                    <Link
+                      to={`/artist/${artist?._id}`}
                       className="inline-block mt-5 text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 border border-white/20 rounded-lg px-3 py-1 backdrop-blur-sm hover:scale-105 transition"
                     >
                       View Full Profile →
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </>

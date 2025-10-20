@@ -1,5 +1,6 @@
 import { Twitter, Instagram, Github, Mail } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
+import { Link } from "react-router-dom";
 
 const creatorData = {
   name: "Rockson",
@@ -50,9 +51,9 @@ const AboutCreator = () => {
           {/* Social links */}
           <div className="flex flex-wrap justify-center md:justify-start gap-3 pt-4">
             {creatorData.socials.map((social, index) => (
-              <a
+              <Link
                 key={index}
-                href={social.url}
+                to={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 
@@ -60,7 +61,7 @@ const AboutCreator = () => {
               >
                 {social.icon}
                 <span className="font-medium">{social.label}</span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

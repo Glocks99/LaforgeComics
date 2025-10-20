@@ -1,6 +1,7 @@
 import { Facebook, Twitter, Instagram, Mail } from "lucide-react";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -42,9 +43,9 @@ const Footer = () => {
           <ul className="space-y-2 text-sm">
             {["Home", "Browse", "Genres", "Latest Updates"].map((link) => (
               <li key={link}>
-                <a href="#" className="hover:text-yellow-400 transition">
+                <Link to="#" className="hover:text-yellow-400 transition">
                   {link}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -58,9 +59,9 @@ const Footer = () => {
           <ul className="space-y-2 text-sm">
             {["Submit Comic", "Support", "Community", "Blog"].map((link) => (
               <li key={link}>
-                <a href="#" className="hover:text-green-400 transition">
+                <Link to="#" className="hover:text-green-400 transition">
                   {link}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -107,7 +108,7 @@ const Footer = () => {
         {/* admin */}
         <div className="">
           <h4 className={`${darkMode ? "text-gray-800" : "text-white"} font-semibold mb-4 border-l-4 border-green-500 pl-2`}>Admin</h4>
-          <a href="/admin/overview">dashboard</a>
+          <Link to="/admin/overview">dashboard</Link>
         </div>
       </div>
 

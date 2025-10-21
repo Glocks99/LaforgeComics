@@ -179,7 +179,9 @@ const ComicDetail = () => {
         <RatingCard comicId={comic._id} userId={user?.user?.id} />
       )}
 
-      <p className="text-xl font-bold px-10 sticky top-[50px] flex justify-between sm:justify-start"><i className="fas fa-quote-left"></i>  {currentEpisode.title} <i className="fas fa-quote-right"></i> </p>
+      {currentEpisode?.title && (
+        <p className="text-xl font-bold px-10 sticky top-[50px] flex justify-between sm:justify-start"><i className="fas fa-quote-left"></i>  {currentEpisode.title} <i className="fas fa-quote-right"></i> </p>
+      )}
 
       {/* Comic Pages */}
       <div className=" px-4 sm:px-10 mb-10">

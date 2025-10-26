@@ -6,9 +6,8 @@ const Comments = require("../models/comment")
 const Ratings = require("../models/ratings")
 const Likes = require("../models/likes")
 const Episode = require("../models/episode")
-const path = require("path")
-const fs = require("fs");
 const mongoose = require("mongoose");
+const { cloudinary } = require("../config/cloudinary");
 
 const getAllComics = async (req, res) => {
   try {
@@ -140,39 +139,44 @@ const deleteComic = async (req, res) => {
       Ratings.deleteMany({ item: comic._id }),
     ]);
 
-    // --- CLEAN UP FILES ---
-
-    // 1. Delete cover image
+    // --- CLEAN UP CLOUDINARY FILES ---
+    // 1️⃣ Delete cover image from Cloudinary
     if (comic.coverImage) {
-      const filename = comic.coverImage.split("/uploads/comics/")[1];
-      const filepath = path.join(__dirname, "../public/uploads/comics", filename);
       try {
-        if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+        // Extract public_id from URL (example: https://res.cloudinary.com/demo/image/upload/v123456789/comics/my-image.jpg)
+        const parts = comic.coverImage.split("/");
+        const folderAndFile = parts.slice(-2).join("/"); // e.g., comics/my-image.jpg
+        const publicId = folderAndFile.split(".")[0]; // remove extension
+        await cloudinary.uploader.destroy(publicId);
       } catch (err) {
-        console.error("Error deleting cover image:", err.message);
+        console.error("Error deleting cover image from Cloudinary:", err.message);
       }
     }
 
-    // 2. Delete episode images (if any)
+    // 2️⃣ Delete episode images (if any)
     const episodes = await Episode.find({ comic: comic._id });
-    episodes.forEach((ep) => {
+    for (const ep of episodes) {
       if (ep.images && Array.isArray(ep.images)) {
-        ep.images.forEach((img) => {
-          const filename = img.split("/uploads/episodes/")[1];
-          const filepath = path.join(__dirname, "../public/uploads/episodes", filename);
+        for (const img of ep.images) {
           try {
-            if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+            const parts = img.split("/");
+            const folderAndFile = parts.slice(-2).join("/");
+            const publicId = folderAndFile.split(".")[0];
+            await cloudinary.uploader.destroy(publicId);
           } catch (err) {
-            console.error("Error deleting episode image:", err.message);
+            console.error("Error deleting episode image from Cloudinary:", err.message);
           }
-        });
+        }
       }
-    });
+    }
 
     // --- DELETE THE COMIC ITSELF ---
     await comic.deleteOne();
 
-    res.json({ success: true, msg: "Comic and all related data deleted successfully" });
+    res.json({
+      success: true,
+      msg: "Comic and all related data deleted successfully (Cloudinary cleanup done)",
+    });
   } catch (err) {
     console.error("Delete Comic Error:", err);
     res.status(500).json({
@@ -229,15 +233,14 @@ const createComic = async (req, res) => {
       return res.status(400).json({ success: false, msg: "Missing required fields" });
     }
 
-    const basePath = req.protocol + "://" + req.get("host") + "/uploads/comics/";
-    const image = basePath + req.file.filename;
+    const imageUrl = req.file.path;
 
     const comic = new Comic({
       name,
       author: new mongoose.Types.ObjectId(author),
       isPublished: isPublished || false,
       description,
-      coverImage: image,
+      coverImage: imageUrl,
       genre: new mongoose.Types.ObjectId(genre),
       tags: Array.isArray(tags) ? tags : tags?.split(",").map((t) => t.trim()),
       views: 0,

@@ -1,6 +1,5 @@
 const CarouselItem = require('../models/carouselItem');
-const path = require("path")
-const fs = require("fs");
+const { cloudinary } = require("../config/cloudinary");
 
 const getCarousel = async(req, res) => {
     try {
@@ -20,8 +19,7 @@ const getCarousel = async(req, res) => {
 const createCarouselItem = async (req, res) => {
     const {logo, isDubbed, contentRated, comic} = req.body
 
-    const basePath = req.protocol + "://" + req.get("host") + "/uploads/carousels/logos/";
-    const image = basePath + req.file.filename;
+    const image = req.file.path;
     try {
         const newItem = new CarouselItem({
             logo: image,
@@ -49,27 +47,40 @@ const updateCarouselItem = async (req, res) => {
 }
 
 const deleteCarouselItem = async (req, res) => {
-    try {
-        const deletedItem = await CarouselItem.findByIdAndDelete(req.params.id);
-        if (!deletedItem) {
-            return res.json({ message: "Carousel item not found" });
-        }
+  try {
+    const deletedItem = await CarouselItem.findByIdAndDelete(req.params.id);
 
-        if (deletedItem.logo) {
-            const filename = deletedItem.logo.split("/uploads/carousels/logos/")[1];
-            const filepath = path.join(__dirname, "../public/uploads/carousels/logos/", filename);
-            try {
-            if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
-            } catch (err) {
-            console.error("Error deleting logo image:", err.message);
-            }
-        }
-
-        res.json({success: true, msg: "deleted successfully"});
-    } catch (error) {
-        res.json({ msg: "Error deleting carousel item" });
+    if (!deletedItem) {
+      return res
+        .status(404)
+        .json({ success: false, msg: "Carousel item not found" });
     }
-}
+
+    // --- DELETE FROM CLOUDINARY ---
+    if (deletedItem.logo) {
+      try {
+        // Example URL:
+        // https://res.cloudinary.com/demo/image/upload/v1733265421/carousels/logos/mylogo.png
+        const parts = deletedItem.logo.split("/");
+        const folderAndFile = parts.slice(-2).join("/"); // e.g., carousels/logos/mylogo.png
+        const publicId = folderAndFile.split(".")[0]; // remove extension
+
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("Error deleting logo from Cloudinary:", err.message);
+      }
+    }
+
+    res.json({ success: true, msg: "Carousel item deleted successfully" });
+  } catch (error) {
+    console.error("Delete Carousel Item Error:", error);
+    res.status(500).json({
+      success: false,
+      msg: "Server error while deleting carousel item",
+      error: error.message,
+    });
+  }
+};
 
 
 module.exports = {

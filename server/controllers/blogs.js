@@ -1,6 +1,5 @@
 const Blog = require("../models/blogs")
-const fs = require("fs")
-const path = require("path")
+const { cloudinary } = require("../config/cloudinary");
 
 const getAllBlogs = async(req,res) => {
     try {
@@ -39,18 +38,19 @@ const getBlogById = async(req,res) => {
 const createBlog = async (req, res) => {
   const { title, excerpt, author, tags, body } = req.body;
 
-  const basePath = req.protocol + "://" + req.get("host") + "/uploads/blogs/";
-
+  
   if (!req.file) {
     return res.json({ success: false, msg: "No image uploaded!" });
   }
 
+  const imageUrl = req.file.path;
+  
   const makeTagArray = tags.split(",")
 
   try {
     const newBlog = await Blog.create({
       title,
-      image: basePath + req.file.filename,
+      image: imageUrl,
       excerpt,
       author,
       tags: makeTagArray,
@@ -67,33 +67,39 @@ const createBlog = async (req, res) => {
   }
 };
 
-const deleteBlog = async(req,res) => {
-  const {id} = req.params
+const deleteBlog = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const blog = await Blog.findByIdAndDelete(id)
+    const blog = await Blog.findByIdAndDelete(id);
 
-    if(!blog){
-      return res.json({success: false, msg: "cant delete blog"})
+    if (!blog) {
+      return res.status(404).json({ success: false, msg: "Blog not found" });
     }
 
-     // Extract filename from full URL
-    const filename = blog.image.split("/uploads/blogs/")[1];
-    const filepath = path.join(__dirname, "../public/uploads/blogs", filename);
-
-    // Delete the image file
-    fs.unlink(filepath, (err) => {
-      if (err) {
-        console.error("Error deleting image file:", err.message);
-        // Continue even if image deletion fails
+    // --- DELETE FROM CLOUDINARY ---
+    if (blog.image) {
+      try {
+        // Example URL: https://res.cloudinary.com/demo/image/upload/v1733265421/blogs/myimage.png
+        const parts = blog.image.split("/");
+        const folderAndFile = parts.slice(-2).join("/"); // e.g., blogs/myimage.png
+        const publicId = folderAndFile.split(".")[0]; // remove extension
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("Error deleting blog image from Cloudinary:", err.message);
       }
-    });
+    }
 
-    return res.json({success: true, msg: "blog deleted"})
+    return res.json({ success: true, msg: "Blog deleted successfully" });
   } catch (error) {
-    
+    console.error("Delete Blog Error:", error);
+    return res.status(500).json({
+      success: false,
+      msg: "Server error while deleting blog",
+      error: error.message,
+    });
   }
-}
+};
 
 
 const updateBlog = async (req, res) => {
@@ -103,18 +109,42 @@ const updateBlog = async (req, res) => {
     return res.status(400).json({ success: false, msg: "No blog ID provided." });
   }
 
-  const makeTagArray = req.body.tags.split(",")
-
   try {
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      id,
-      { $set: {...req.body, tags: makeTagArray } },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedBlog) {
+    const blog = await Blog.findById(id);
+    if (!blog) {
       return res.status(404).json({ success: false, msg: "Blog not found." });
     }
+
+    // Handle tags if sent as a string
+    const tags =
+      typeof req.body.tags === "string"
+        ? req.body.tags.split(",").map((t) => t.trim())
+        : req.body.tags;
+
+    const updateData = { ...req.body, tags };
+
+    // --- If a new image is uploaded, delete old one from Cloudinary ---
+    if (req.file) {
+      // Delete the old image
+      if (blog.image) {
+        try {
+          const parts = blog.image.split("/");
+          const folderAndFile = parts.slice(-2).join("/");
+          const publicId = folderAndFile.split(".")[0];
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.error("Error deleting old blog image from Cloudinary:", err.message);
+        }
+      }
+
+      // Set the new Cloudinary image URL
+      updateData.image = req.file.path;
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     return res.status(200).json({
       success: true,
@@ -122,6 +152,7 @@ const updateBlog = async (req, res) => {
       blog: updatedBlog,
     });
   } catch (error) {
+    console.error("Update Blog Error:", error);
     return res.status(500).json({
       success: false,
       msg: "Error updating blog.",

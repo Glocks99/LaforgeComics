@@ -1,7 +1,6 @@
 const Artist = require("../models/artists");
 const Comic = require("../models/comics")
-const fs = require("fs");
-const path = require("path");
+const { cloudinary } = require("../config/cloudinary");
 
 const getArtists = async (req, res) => {
     try {
@@ -26,27 +25,17 @@ const getArtistById = async (req, res) => {
 
 const createArtist = async (req, res) => {
   try {
-    const {
-      name,
-      bio,
-      email,
-      socialLinks,
-      location,
-      phone,
-    } = req.body;
+    const { name, bio, email, socialLinks, location, phone } = req.body;
 
-    const basePath = req.protocol + "://" + req.get("host") + "/uploads/artists/";
+    // Cloudinary automatically gives us hosted URLs
+    const image = req.files?.image?.[0]?.path || "";
+    const coverImage = req.files?.coverImage?.[0]?.path || "";
 
-    const image = req.files?.image?.[0]
-      ? `${basePath}${req.files.image[0].filename}`
-      : "";
-    const coverImage = req.files?.coverImage?.[0]
-      ? `${basePath}${req.files.coverImage[0].filename}`
-      : "";
-
+    // Handle social links (stringified JSON from frontend)
     const parsedLinks =
       typeof socialLinks === "string" ? JSON.parse(socialLinks) : socialLinks;
 
+    // Create new artist document
     const newArtist = new Artist({
       name,
       bio,
@@ -62,11 +51,11 @@ const createArtist = async (req, res) => {
 
     res.json({
       success: true,
-      msg: "Artist created successfully",
+      msg: " Artist created successfully!",
       data: newArtist,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error creating artist:", error);
     res.status(500).json({
       success: false,
       msg: "Error creating artist",
@@ -84,15 +73,41 @@ const updateArtist = async (req, res) => {
       return res.status(404).json({ success: false, msg: "Artist not found" });
     }
 
-    // handle uploaded files
-    const basePath = req.protocol + "://" + req.get("host") + "/uploads/artists/";
-    const image =
-      req.files?.image?.[0] && `${basePath}${req.files.image[0].filename}`;
-    const coverImage =
-      req.files?.coverImage?.[0] &&
-      `${basePath}${req.files.coverImage[0].filename}`;
+    // --- Handle uploaded Cloudinary files ---
+    let image = artist.image;
+    let coverImage = artist.coverImage;
 
-    // parse socialLinks safely
+    // If new profile image uploaded, delete old one
+    if (req.files?.image?.[0]) {
+      if (artist.image) {
+        try {
+          const parts = artist.image.split("/");
+          const folderAndFile = parts.slice(-2).join("/");
+          const publicId = folderAndFile.split(".")[0];
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.error("Error deleting old profile image from Cloudinary:", err.message);
+        }
+      }
+      image = req.files.image[0].path; // Cloudinary URL
+    }
+
+    // If new cover image uploaded, delete old one
+    if (req.files?.coverImage?.[0]) {
+      if (artist.coverImage) {
+        try {
+          const parts = artist.coverImage.split("/");
+          const folderAndFile = parts.slice(-2).join("/");
+          const publicId = folderAndFile.split(".")[0];
+          await cloudinary.uploader.destroy(publicId);
+        } catch (err) {
+          console.error("Error deleting old cover image from Cloudinary:", err.message);
+        }
+      }
+      coverImage = req.files.coverImage[0].path; // Cloudinary URL
+    }
+
+    // --- Parse socialLinks safely ---
     let parsedLinks = req.body.socialLinks;
     if (typeof parsedLinks === "string") {
       try {
@@ -102,7 +117,7 @@ const updateArtist = async (req, res) => {
       }
     }
 
-    // build update object
+    // --- Build update object ---
     const updateData = {
       name: req.body.name || artist.name,
       bio: req.body.bio || artist.bio,
@@ -110,15 +125,14 @@ const updateArtist = async (req, res) => {
       location: req.body.location || artist.location,
       phone: req.body.phone || artist.phone,
       socialLinks: parsedLinks || artist.socialLinks,
-      image: image || artist.image,
-      coverImage: coverImage || artist.coverImage,
+      image,
+      coverImage,
     };
 
-    const updatedArtist = await Artist.findByIdAndUpdate(
-      artistId,
-      updateData,
-      { new: true }
-    );
+    const updatedArtist = await Artist.findByIdAndUpdate(artistId, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     res.json({
       success: true,
@@ -126,7 +140,7 @@ const updateArtist = async (req, res) => {
       data: updatedArtist,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating artist:", error);
     res.status(500).json({
       success: false,
       msg: "Error updating artist",
@@ -144,26 +158,26 @@ const deleteArtist = async (req, res) => {
       return res.status(404).json({ success: false, msg: "Artist not found" });
     }
 
-    // Delete all comics belonging to this artist
+    // --- Delete all comics belonging to this artist ---
     await Comic.deleteMany({ author: deletedArtist._id });
 
-  
-
-    const deleteFile = (fileName) => {
-      if (!fileName) return;
-
-      const filename = fileName.split("/uploads/artists/")[1];
-      const filepath = path.join(__dirname, "../public/uploads/artists", filename);
+    // --- Delete artist images from Cloudinary ---
+    const deleteFromCloudinary = async (fileUrl) => {
+      if (!fileUrl) return;
       try {
-        if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+        const parts = fileUrl.split("/");
+        const folderAndFile = parts.slice(-2).join("/");
+        const publicId = folderAndFile.split(".")[0];
+        await cloudinary.uploader.destroy(publicId);
       } catch (err) {
-        console.error("Error deleting cover image:", err.message);
+        console.error("Error deleting image from Cloudinary:", err.message);
       }
     };
 
-    // Delete both image and coverImage if they exist
-    deleteFile(deletedArtist.image);
-    deleteFile(deletedArtist.coverImage);
+    await Promise.all([
+      deleteFromCloudinary(deletedArtist.image),
+      deleteFromCloudinary(deletedArtist.coverImage),
+    ]);
 
     res.status(200).json({
       success: true,

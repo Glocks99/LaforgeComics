@@ -1,6 +1,6 @@
 const Episode = require("../models/episode.js");
 const Comic = require("../models/comics.js");
-
+const { cloudinary } = require("../config/cloudinary");
 /**
  * @desc    Create a new episode
  * @route   POST /api/episodes
@@ -10,18 +10,18 @@ const createEpisode = async (req, res) => {
   try {
     const { comicId, title, episodeNumber, isLocked } = req.body;
 
-    // Validate required fields
+    // --- Validate required fields ---
     if (!comicId || !title || !episodeNumber) {
       return res.status(400).json({ success: false, msg: "Missing required fields" });
     }
 
-    // Check if comic exists
+    // --- Check if comic exists ---
     const comic = await Comic.findById(comicId);
     if (!comic) {
       return res.status(404).json({ success: false, msg: "Comic not found" });
     }
 
-    // Ensure unique episode number
+    // --- Ensure unique episode number ---
     const existingEpisode = await Episode.findOne({ comic: comicId, episodeNumber });
     if (existingEpisode) {
       return res.status(400).json({
@@ -30,16 +30,13 @@ const createEpisode = async (req, res) => {
       });
     }
 
-    // 🧠 Handle multiple possible field formats
+    // --- Handle multiple field formats ---
     let files = [];
     if (Array.isArray(req.files)) {
-      // if multer.array was used
-      files = req.files;
+      files = req.files; // multer.array()
     } else if (req.files?.images) {
-      // if multer.fields was used
-      files = req.files.images;
+      files = req.files.images; // multer.fields({ name: 'images' })
     } else if (req.files?.["images[]"]) {
-      // support for images[] field
       files = req.files["images[]"];
     }
 
@@ -47,11 +44,10 @@ const createEpisode = async (req, res) => {
       return res.status(400).json({ success: false, msg: "At least one image is required" });
     }
 
-    // Build URLs
-    const basePath = `${req.protocol}://${req.get("host")}/uploads/episodes/`;
-    const imagePaths = files.map((file) => basePath + file.filename);
+    // --- Collect Cloudinary URLs (already uploaded via middleware) ---
+    const imagePaths = files.map((file) => file.path); // Cloudinary gives secure URL in file.path
 
-    // Create episode
+    // --- Create Episode ---
     const episode = await Episode.create({
       comic: comicId,
       title,
@@ -60,22 +56,23 @@ const createEpisode = async (req, res) => {
       isLocked: isLocked === "true" || false,
     });
 
-    // Add episode reference to comic
+    // --- Add episode reference to comic ---
     await Comic.findByIdAndUpdate(comicId, { $push: { episodes: episode._id } });
 
-    res.status(201).json({
+    res.json({
       success: true,
       msg: "Episode created successfully",
       episode,
     });
   } catch (error) {
     console.error("Create Episode Error:", error);
-    res
-      .status(500)
-      .json({ success: false, msg: "Server Error", error: error.message });
+    res.json({
+      success: false,
+      msg: "Server Error",
+      error: error.message,
+    });
   }
-};
-
+}
 
 /**
  * @desc    Get all episodes (optionally filter by comic)

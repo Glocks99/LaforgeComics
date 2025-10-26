@@ -8,37 +8,8 @@ const {
   deleteEpisode,
   toggleLock,
 } = require("../controllers/episode");
-
-const multer = require("multer");
-const path = require("path");
-
-// Allowed image types
-const MIMETYPE = {
-  "image/png": ".png",
-  "image/jpg": ".jpg",
-  "image/jpeg": ".jpeg",
-  "image/webp": ".webp",
-  "image/svg+xml": ".svg",
-};
-
-// Storage configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const isValid = MIMETYPE[file.mimetype];
-    let uploadError = new Error("Invalid image type");
-
-    if (isValid) uploadError = null;
-
-    cb(uploadError, path.join(__dirname, "../public/uploads/episodes"));
-  },
-  filename: function (req, file, cb) {
-    const fileName = file.originalname.split(" ").join("-");
-    const extension = MIMETYPE[file.mimetype];
-    cb(null, `${fileName}-${Date.now()}${extension}`);
-  },
-});
-
-const upload = multer({ storage });
+const { makeUploader } = require("../config/cloudinary");
+const upload = makeUploader("episodes");
 
 // Middleware that accepts both “images” and “images[]”
 const multiFieldUpload = upload.fields([

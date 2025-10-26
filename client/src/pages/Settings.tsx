@@ -134,8 +134,6 @@ const Settings = () => {
     }
   }
 
-
-
   return (
     <div className="flex flex-col sm:flex-row gap-1 bg-[#123] h-screen p-[12px] sm:p-[16px]">
       <div
@@ -148,15 +146,18 @@ const Settings = () => {
 
       <div className="bg-black/25 sm:flex-1 rounded-lg py-1 flex flex-col items-center gap-2.5">
         <div
-          className="h-36 w-36 sm:w-full sm:h-full border sm:rounded-none rounded-full border-white/10 flex items-center justify-center text-3xl font-bold text-white"
+          className="relative h-36 w-36 sm:w-full sm:h-[75%] border sm:rounded-none rounded-full border-white/10 flex items-center justify-center text-3xl font-bold text-white"
           style={{
             backgroundColor: getColorFromName(
               user.user?.firstName[0] + user.user?.lastName[0]
             ),
           }}
         >
-          {user.user?.firstName[0] || "G"}
-          {user.user?.lastName[0] || "U"}
+          <img src="/blob.gif" className="block absolute z-0" alt="" />
+          <div className="absolute">
+            {user.user?.firstName[0] || "G"}
+            {user.user?.lastName[0] || "U"}
+          </div>
         </div>
         <div className="text-sm text-indigo-400">
           {user.user?.email || "Guest user"}

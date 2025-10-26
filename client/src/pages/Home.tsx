@@ -23,7 +23,7 @@ const Home = () => {
       setShowLoader(true);
     } else if (showLoader) {
       // Wait for the fade-out animation before unmounting
-      const timer = setTimeout(() => setShowLoader(false), 1000); // 500ms matches CSS duration
+      const timer = setTimeout(() => setShowLoader(false), 1000);
       return () => clearTimeout(timer);
     }
   }, [isLoading]);

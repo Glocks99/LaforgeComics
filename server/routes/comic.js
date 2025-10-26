@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const {getAllComics,createComic,updateComic,deleteComic,getAllComicsForAdmin,getComicNames, getComicCount, getPopularComics,addComicPage, getComicById} = require("../controllers/comic")
-const multer = require("multer")
+const { makeUploader } = require("../config/cloudinary");
 // Create uploader for comics (Cloudinary folder name)
 const upload = makeUploader("comics");
 

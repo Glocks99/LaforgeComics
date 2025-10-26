@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Gift, Coins, ChevronLeft, ChevronLeftCircle } from "lucide-react";
+import { Heart, Gift, Coins, ChevronLeftCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 

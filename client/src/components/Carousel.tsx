@@ -91,17 +91,21 @@ const Carousel = ({ isHovered }: { isHovered: boolean }) => {
     <>
       {/* Background (raw cover image) */}
       <div
-        className="absolute top-0 left-0 w-full sm:w-[60%] h-full z-0 transition-all duration-700 
-             bg-no-repeat bg-top bg-contain sm:bg-top sm:bg-cover"
+        className="absolute top-0 left-0 w-full h-full z-0 transition-all duration-700 
+             bg-repeat bg-top bg-contain sm:bg-top sm:bg-cover"
         style={{
           backgroundImage: `url(${current.comic?.coverImage || "/comicPlaceholder.png"})`,
         }}
       ></div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black  to-transparent z-0"></div>
+      <div className="absolute inset-0 backdrop-blur-none  sm:backdrop-blur-2xl  to-transparent z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black  to-transparent z-10"></div>
 
       {/* Content */}
       <div className="relative z-10 h-full w-full text-white flex gap-2.5 px-4 sm:px-10">
+        <div className="hidden sm:block flex-1">
+          <img src={current.comic?.coverImage} className="object-contain h-full" alt="" />
+        </div>
         <div className="w-full flex-1 flex flex-col justify-end sm:justify-center sm:pb-6 gap-4">
           {/* Logo */}
           <div className="w-full h-[100px] flex items-center justify-center sm:justify-end">
@@ -132,8 +136,8 @@ const Carousel = ({ isHovered }: { isHovered: boolean }) => {
           </div>
 
           {/* Description */}
-          <div className="flex justify-center sm:justify-end">
-            <p className="text-sm sm:text-lg text-gray-200 sm:w-[50%] text-center sm:text-right backdrop-blur-md bg-white/5 border border-white/10 p-3 rounded-xl shadow-md line-clamp-3">
+          <div className="flex justify-center sm:justify-end sm:h-[100px] overflow-hidden">
+            <p className="text-sm sm:text-lg text-gray-200 text-center sm:text-right backdrop-blur-md bg-white/5 border border-white/10 p-3 rounded-xl shadow-md">
               {current.comic?.description}
             </p>
           </div>

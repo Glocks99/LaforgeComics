@@ -20,6 +20,7 @@ type artistData = {
   _id: string;
   name: string;
   image: string;
+  coverImage?: string;
   bio: string;
   socialLinks: {
     twitter: string;
@@ -87,7 +88,7 @@ const ArtistSpotlight = () => {
               <>
                 {/* Background */}
                 <img
-                  src={artist?.image || "/comicPlaceholder.png"}
+                  src={artist?.coverImage || "/comicPlaceholder.png"}
                   alt={artist?.name}
                   className="absolute inset-0 w-full h-full object-cover brightness-75 group-hover:brightness-100 transition duration-700"
                 />
@@ -99,7 +100,7 @@ const ArtistSpotlight = () => {
                   <img
                     src={artist?.image || "/comicPlaceholder.png"}
                     alt={artist?.name}
-                    className="hidden sm:block w-full h-32 object-cover border-4 border-white/10 shadow-lg"
+                    className="hidden sm:block w-full h-32 object-cover border-1 border-white/10 shadow-lg"
                   />
 
                   {/* Info */}

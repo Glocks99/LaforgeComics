@@ -81,6 +81,7 @@ const login = async(req,res) => {
             phone: User.phone,
             email: User.email,
             isVerified: User.isVerified,
+            isAdmin: User.isAdmin,
             id: User._id
         }})
 

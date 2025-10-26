@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const creatorData = {
   name: "Rockson",
   image:
-    "https://images.unsplash.com/photo-1603415526960-f8f0b4c9fdd4?auto=format&fit=crop&w=300&q=80",
+    "",
   bio: `Hi! I'm Rockson, a passionate comic enthusiast, developer, and digital artist. 
   I built this platform to celebrate diverse storytelling through webcomics, manga, 
   and to give African creators a place to shine. When I’m not coding or drawing, 
@@ -33,7 +33,7 @@ const AboutCreator = () => {
         <div className="relative">
           <div className="absolute inset-0 -z-10 bg-gradient-to-r from-yellow-400 to-pink-500 rounded-2xl blur-lg opacity-70 animate-pulse" />
           <img
-            src={creatorData.image}
+            src={creatorData.image || "./comicPlaceholder.png"}
             alt={creatorData.name}
             className="w-44 h-44 sm:w-56 sm:h-56 object-cover rounded-2xl shadow-2xl transform hover:rotate-1 hover:scale-105 transition duration-500"
           />

@@ -6,11 +6,12 @@ import {
   LogOut,
   User,
   Settings,
-  Bookmark,
-  Bell,
   X,
   Loader,
   PenToolIcon,
+  HeartPlus,
+  CircleQuestionMark,
+  ChevronRight,
 } from "lucide-react";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
@@ -18,6 +19,8 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import {faqData} from "../pages/Settings"
+import Modal from "./Modal";
 
 type Comic = {
   _id: string;
@@ -46,6 +49,12 @@ const Header = () => {
   const [searchItem, setSearchItem] = useState("");
   const [comics, setComics] = useState<Comic[]>([]);
   const [_, setIsLoading] = useState(false)
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+
+  const toggleFAQ = (index: number) => {
+    setOpenFAQ(openFAQ === index ? null : index);
+  };
 
   const handleSearch = async () => {
     if (searchItem.trim() === "") {
@@ -80,7 +89,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`${darkMode ? "bg-white text-gray-600" : "bg-[#1a1f2b] text-white"} overflow-hidden shadow-md sticky top-0 z-60`}>
+    <header className={`${darkMode ? "bg-white text-gray-600" : "bg-[#1a1f2b] text-white"} shadow-md sticky top-0 z-60`}>
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 sm:px-10 py-4 border-b border-[#32485e]">
         {/* Left: User Profile / Login */}
@@ -91,7 +100,7 @@ const Header = () => {
               <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-600 border-2 border-[#1a1f2b]" />
 
               {/* Dropdown */}
-              <div className="hidden group-hover:flex font-normal text-white flex-col absolute top-[120%] left-[100%] bg-[#1a1f2b] border border-[#32485e] rounded-lg shadow-xl w-52 overflow-hidden z-50 animate-fade-in-up">
+              <div className="hidden group-hover:flex font-normal text-white flex-col absolute top-[10%] left-[110%] bg-[#1a1f2b] border border-[#32485e] rounded-lg shadow-xl w-52 overflow-hidden animate-fade-in-up">
                 <div className="px-4 py-3 border-b border-[#32485e] text-sm font-semibold text-yellow-400">
                   Hello, {user.user?.firstName}
                 </div>
@@ -108,17 +117,17 @@ const Header = () => {
                   <Settings size={18} /> Settings
                 </button>
                 <button
-                  onClick={() => navigate("/saved")}
+                  onClick={() => navigate("/likes")}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-[#2c3648] transition w-full text-left text-sm"
                 >
-                  <Bookmark size={18} /> Saved
+                  <HeartPlus size={18} /> favourites
                 </button>
                 <button
-                  onClick={() => navigate("/notifications")}
+                  onClick={() => setIsFaqOpen(true)}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-[#2c3648] transition w-full text-left text-sm relative"
                 >
-                  <Bell size={18} /> Notifications
-                  <span className="absolute top-2 right-4 h-2 w-2 bg-yellow-400 rounded-full animate-ping" />
+                  <CircleQuestionMark size={18} /> FAQ
+                 
                 </button>
                 <button
                   onClick={logout}
@@ -184,7 +193,10 @@ const Header = () => {
       {isSearchOpen && (
         <div className="fixed inset-0 overflow-hidden backdrop-blur-xl z-50 flex flex-col items-center p-4 gap-1.5 text-white bg-black/60">
           <div
-            onClick={() => setIsSearchOpen(false)}
+            onClick={() => {
+              setIsSearchOpen(false)
+              setComics([])
+            }}
             className="flex items-center justify-end w-full cursor-pointer hover:text-red-500"
           >
             <X />
@@ -309,6 +321,37 @@ const Header = () => {
           ))}
         </ul>
       </nav>
+
+      {/* FAQ Modal (Collapsible) */}
+        <Modal
+          isOpen={isFaqOpen}
+          onClose={() => setIsFaqOpen(false)}
+          title="Frequently asked questions"
+        >
+          <div className="text-white">
+            {faqData.map((faq, index) => (
+              <div key={index} className="border-b border-white/10 py-1.5 mt-2">
+                <p
+                  className="font-bold cursor-pointer flex justify-between items-center"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  {faq.question}
+                  <ChevronRight
+                    size={16}
+                    className={`transition-transform ${
+                      openFAQ === index ? "rotate-90" : ""
+                    }`}
+                  />
+                </p>
+                {openFAQ === index && (
+                  <p className="bg-white/10 p-1 rounded-lg text-sm mt-1 transition-all duration-300">
+                    {faq.answer}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </Modal>
     </header>
   );
 };

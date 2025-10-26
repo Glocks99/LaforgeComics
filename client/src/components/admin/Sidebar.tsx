@@ -23,7 +23,7 @@ const navLinks = [
 
 const Sidebar = ({currentActive}:{currentActive: String}) => {
   const [active, setActive] = useState(currentActive);
-  const {isMenuOpen,setIsMenuOpen} = useAppContext()
+  const {isMenuOpen,setIsMenuOpen, logout} = useAppContext()
   const navigate = useNavigate()
 
   const handleClick = (label: string) => {
@@ -34,15 +34,6 @@ const Sidebar = ({currentActive}:{currentActive: String}) => {
 
   return (
     <>
-      {/* Mobile Header */}
-      {/* <div className="sm:hidden fixed top-0 left-0 w-full z-30  p-4 flex items-center justify-between bg-white/80">
-        <h2 className="text-lg font-semibold">Admin</h2>
-        <button onClick={() => setIsOpen(!isOpen)} className="text-black">
-          {isOpen ? <X /> : <Menu />}
-        </button>
-      </div> */}
-
-      {/* Sidebar Panel */}
       <aside
         className={`fixed sm:relative sm:h-[100vh] bottom-0 left-0 z-50 w-full sm:w-[240px] rounded-t-2xl sm:rounded-t-none bg-gradient-to-br from-[#1a2638] to-[#234] text-white p-6 shadow-lg transform transition-transform duration-300
         ${isMenuOpen ? "translate-y-0" : "translate-y-full"} sm:translate-y-0 sm:relative sm:block`}
@@ -69,7 +60,7 @@ const Sidebar = ({currentActive}:{currentActive: String}) => {
             );
           })}
         </nav>
-        <button className="flex items-center gap-3 bg-red-600 w-full mt-2.5 rounded py-2.5 px-3.5">logout <LogOut size={16} /></button>
+        <button onClick={logout}  className="flex items-center gap-3 bg-red-600 w-full mt-2.5 rounded py-2.5 px-3.5">logout <LogOut size={16} /></button>
         <p className="text-xs text-center mt-1.5">&copy;{new Date().getFullYear()} <span>Laforge comics</span></p>
       </aside>
     </>

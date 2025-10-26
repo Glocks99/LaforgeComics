@@ -11,6 +11,15 @@ interface Comment {
   createdAt: string;
 }
 
+export const getColorFromName = (name: string) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = hash % 360;
+  return `hsl(${hue},70%, 60%)`;
+};
+
 const CommentsSection = ({ comicId, msg }: { comicId: string; msg: string }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,16 +60,6 @@ const CommentsSection = ({ comicId, msg }: { comicId: string; msg: string }) => 
   if (comicId) fetchComments();
   return () => { isMounted = false; };
 }, [comicId, msg]);
-
-
-  const getColorFromName = (name: string) => {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = hash % 360;
-  return `hsl(${hue},70%, 60%)`;
-};
 
 
   return (

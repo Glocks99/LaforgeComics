@@ -1,38 +1,93 @@
-import { LogOut, Edit3, Bookmark, BookOpen, History, ChevronLeft } from "lucide-react";
+import { Edit3, ChevronLeft, Trash, User, Mail, Phone, CheckSquare, Eye, EyeClosed, X, CalendarCheck2, InfoIcon } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
-// import { useNavigate } from "react-router-dom";
-// import EditProfileModal from "../components/EditProfileModal";
 import Modal from "../components/Modal";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Profile = () => {
-  const { user, logout } = useAppContext();
-  // const navigate = useNavigate();
+  const { user, setUser } = useAppContext();
+  const navigate = useNavigate();
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
+  const [confirmDel, setConfirmDel] = useState(false)
+  const [formData, setFormData] = useState({
+    firstName: user.user?.firstName || "",
+    lastName: user.user?.lastName || "",
+    phone: user.user?.phone || "",
+  });
 
-  // Dummy reading stats & activity
-  const stats = [
-    { label: "Comics Read", value: 24, icon: <BookOpen size={18} /> },
-    { label: "Books Read", value: 5, icon: <Bookmark size={18} /> },
-    { label: "Favorites", value: 12, icon: <Bookmark size={18} /> },
-  ];
 
-  const recentActivity = [
-    { id: 1, title: "Shazam: The Return", date: "2024-06-28" },
-    { id: 2, title: "African Legends Vol. 1", date: "2024-06-25" },
-    { id: 3, title: "Manga Heroes", date: "2024-06-20" },
-  ];
+ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  setFormData((prev) => ({
+    ...prev,
+    [e.target.name]: e.target.value,
+  }));
+};
 
-  const onClose = () => {};
 
-  const navigate = useNavigate()
+  const handleSave = async () => {
+    const hasEmpty = Object.entries(formData).some(([key, value]) => {
+    if (!value) {
+      toast.error(`"${key}" is required`);
+      return true;
+    }
+    return false;
+  });
+
+  if (hasEmpty) return; // Stop submission
+
+
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_BackendURL}/api/user/${user.user?.id}`,
+        formData,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        toast.success("Profile updated successfully!");
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        setUser({ isLoggedIn: true, user: res.data.user });
+        setIsEditOpen(false);
+      } else {
+        toast.error(res.data.msg || "Failed to update profile");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while updating profile");
+    }
+  };
+
+  const deleteAcc = async(id: string) => {
+    if(!id) return toast.error("Account not found!")
+    try {
+      const {data} = await axios.delete(`${import.meta.env.VITE_BackendURL}/api/user/${id}`)
+
+      if(data.success){
+        toast.success(data.msg)
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser({
+        isLoggedIn: false,
+        user: undefined,
+      });
+        setConfirmDel(false)
+        navigate('/')
+      }
+      else{
+        toast.error(data.msg)
+      }
+    } catch (error: any) {
+      toast.error(error.message)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#10141e] text-white flex flex-col px-4 sm:px-10 py-8">
       <div className="max-w-5xl mx-auto w-full flex flex-col gap-6">
 
-        <div onClick={() => navigate(-1)} className="sticky top-0 left-0 h-[40px] z-20 text-white flex items-center cursor-pointer backdrop-blur-2xl">
+        <div onClick={() => navigate(-1)} className="sticky top-0 h-[40px] text-white flex items-center cursor-pointer backdrop-blur-2xl">
             <ChevronLeft />
             Back
         </div>
@@ -54,117 +109,141 @@ const Profile = () => {
               </p>
             </div>
           </div>
+          
           <div className="flex gap-3 mt-4 sm:mt-0">
             <button
-              onClick={() => setIsEditOpen(true)}
-              className="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded flex items-center gap-1.5 transition"
+              onClick={() => {
+                if(!user.isLoggedIn) return toast.error("Login first to edit account!")
+                setIsEditOpen(true)
+              }}
+              className="bg-yellow-500 w-full hover:bg-yellow-400 text-black px-4 py-2 rounded flex items-center gap-1.5 transition"
             >
               <Edit3 size={16} /> Edit Profile
             </button>
-            <Modal
-              isOpen={isEditOpen}
-              onClose={() => setIsEditOpen(false)}
-              title="Edit Your Profile"
-            >
-              {/* Form */}
-              <div className="flex flex-col gap-4">
-                <div>
-                  <label className="text-sm text-gray-400">First Name</label>
-                  <input
-                    type="text"
-                    defaultValue={user.user?.firstName}
-                    className="w-full px-3 py-2 rounded bg-[#234] border border-gray-600 text-white mt-1 outline-none focus:border-yellow-500 transition"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-400">Last Name</label>
-                  <input
-                    type="text"
-                    defaultValue={user.user?.lastName}
-                    className="w-full px-3 py-2 rounded bg-[#234] border border-gray-600 text-white mt-1 outline-none focus:border-yellow-500 transition"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-400">Email</label>
-                  <input
-                    type="email"
-                    defaultValue={user.user?.email}
-                    className="w-full px-3 py-2 rounded bg-[#234] border border-gray-600 text-white mt-1 outline-none focus:border-yellow-500 transition"
-                  />
-                </div>
-              </div>
 
-              {/* Buttons */}
-              <div className="flex justify-end gap-4 mt-6">
-                <button
-                  onClick={onClose}
-                  className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    // handle save here!
-                    onClose();
-                  }}
-                  className="bg-yellow-500 hover:bg-yellow-400 text-black px-4 py-2 rounded transition"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </Modal>
             <button
-              onClick={logout}
-              className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded flex items-center gap-1.5 transition"
+              onClick={() => {
+                if(!user.isLoggedIn) return toast.error("Login first to delete account!")
+                setConfirmDel(true)
+              }}
+              className="bg-red-600 w-full hover:bg-red-500 text-white px-4 py-2 rounded flex items-center gap-1.5 transition"
             >
-              <LogOut size={16} /> Logout
+              <Trash size={16} /> Delete acc
             </button>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-[#1b2330] rounded p-4 flex flex-col items-center shadow-lg"
-            >
-              <div className="text-yellow-400 mb-2">{stat.icon}</div>
-              <h2 className="text-2xl font-bold">{stat.value}</h2>
-              <p className="text-gray-400 text-sm">{stat.label}</p>
+        {confirmDel && (
+          <div className="fixed inset-0 bg-black/60 z-10 px-2.5 flex flex-col justify-center">
+
+            <div className="bg-black py-2.5">
+              <p className="border-b border-white/10 text-2xl mb-2.5 font-medium">Confirm Deletion</p>
+              <p>Are you sure you want to <span className="text-red-600 font-extrabold">delete</span> this account ?</p>
+              <p className="text-xs flex items-center gap-2 border bg-white/10 border-white/10 px-1 rounded-full"><InfoIcon size={16} /> All related activities with this account will be wiped out clean</p>
+
+              <div className="flex items-center gap-1 mt-2.5">
+                <button onClick={() => setConfirmDel(false)}  className="bg-white/10 w-full rounded-md flex items-center justify-center gap-1 py-2.5"><X size={16} /> close</button>
+                <button onClick={() => deleteAcc(user.user?.id)}  className="bg-red-600 w-full flex items-center justify-center gap-1 py-2.5 rounded-md"><Trash size={16} /> Delete</button>
+              </div>
             </div>
-          ))}
+          </div>
+        )}
+
+        {/* Edit Modal */}
+        <Modal
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          title="Edit Your Profile"
+        >
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="text-sm text-gray-400">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                placeholder={user.user?.firstName}
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded bg-[#234] border border-gray-600 text-white mt-1 outline-none focus:border-yellow-500 transition"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-400">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                placeholder={user.user?.lastName}
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded bg-[#234] border border-gray-600 text-white mt-1 outline-none focus:border-yellow-500 transition"
+              />
+            </div>
+
+
+            <div>
+              <label className="text-sm text-gray-400">Phone</label>
+              <input
+                type="text"
+                name="phone"
+                placeholder={user.user?.phone}
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full px-3 py-2 rounded bg-[#234] border border-gray-600 text-white mt-1 outline-none focus:border-yellow-500 transition"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4 mt-6">
+            <button
+              onClick={() => setIsEditOpen(false)}
+              className="bg-gray-600 w-full hover:bg-gray-500 text-white px-4 py-2 rounded transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="bg-yellow-500 w-full hover:bg-yellow-400 text-black px-4 py-2 rounded transition"
+            >
+              Save Changes
+            </button>
+          </div>
+        </Modal>
+
+       <div className="bg-white/10 rounded-lg p-1 flex flex-col gap-2.5">
+       <div className="text-2xl font-semibold border-b border-white/10 py-2.5">Profile Details</div>
+        <div className="flex items-center justify-between gap-1.5">
+          <p className="flex items-center gap-0.5"><User size={16} /> Name:</p>
+          <p className={ `${!isVisible && "blur-sm"}`}>{user.user?.firstName} {user.user?.lastName}</p>
+        </div>
+        <div className="flex items-center justify-between gap-1.5">
+          <p className="flex items-center gap-0.5"><Mail size={16} /> Email:</p>
+          <p className={ `${!isVisible && "blur-sm"}`}>{user.user?.email}</p>
+        </div>
+        <div className="flex items-center justify-between gap-1.5">
+          <p className="flex items-center gap-0.5"><Phone size={16} /> Phone:</p>
+          <p className={ `${!isVisible && "blur-sm"}`}>{user.user?.phone}</p>
+        </div>
+        <div className="flex items-center justify-between gap-1.5">
+          <p className="flex items-center gap-0.5"><CheckSquare size={16} /> IsAccountVerified:</p>
+          <p className={ `${!isVisible && "blur-sm"}`}>{user.user?.isVerified ? "verified" : "Not verified"}</p>
+        </div>
+        <div className="flex items-center justify-between gap-1.5">
+          <p className="flex items-center gap-0.5"><CalendarCheck2 size={16} /> CreatedAt:</p>
+          <p className={ `${!isVisible && "blur-sm"}`}>{user.user?.createdAt ? "00/00/25" : "Not Set"}</p>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-[#1b2330] rounded p-6 shadow-lg">
-          <h2 className="text-xl font-bold mb-4">Recent Activity</h2>
-          <ul className="space-y-3">
-            {recentActivity.map((activity) => (
-              <li
-                key={activity.id}
-                className="flex items-center justify-between bg-[#234] rounded px-4 py-3 hover:bg-[#32485e] cursor-pointer transition"
-              >
-                <History />
-                <p className="line-clamp-1 w-full">{activity.title}</p>
-                <p className="text-sm text-gray-400 line-clamp-1">
-                  {activity.date}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <button onClick={() => user.isLoggedIn && setIsVisible(!isVisible)}  className="cursor-pointer flex mt-2.5 rounded-md items-center justify-center bg-green-400 py-2.5 gap-1.5">
+          {isVisible ? 
+          (<EyeClosed size={16} />): 
+          (<Eye size={16} />)
+          }
+          {isVisible ? "Hide Details": "see Details"}
+        </button>
+       </div>
+
+      
       </div>
-
-      {/* <EditProfileModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        user={{
-          firstName: user?.user?.firstName || "",
-          lastName: user?.user?.lastName || "",
-          email: user?.user?.email || "",
-        }}
-      /> */}
     </div>
   );
 };

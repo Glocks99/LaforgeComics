@@ -41,10 +41,20 @@ const Footer = () => {
             Quick Links
           </h4>
           <ul className="space-y-2 text-sm">
-            {["Home", "Browse", "Genres", "Latest Updates"].map((link) => (
-              <li key={link}>
-                <Link to="#" className="hover:text-yellow-400 transition">
-                  {link}
+            {[{name:"Home",
+              link: "/"
+            }, 
+            {name: "Browse",
+              link: "/comics"
+            }, 
+            {name: "Genres",
+              link: "#genres"
+            },{name: "Latest Updates",
+              link: "#latest"
+            }].map((link) => (
+              <li key={link.name}>
+                <Link to={link.link} className="hover:text-yellow-400 transition">
+                  {link.name}
                 </Link>
               </li>
             ))}
@@ -57,10 +67,20 @@ const Footer = () => {
             Resources
           </h4>
           <ul className="space-y-2 text-sm">
-            {["Submit Comic", "Support", "Community", "Blog"].map((link) => (
-              <li key={link}>
-                <Link to="#" className="hover:text-green-400 transition">
-                  {link}
+            {[{name:"Submit Comic",
+              link: "/submit-comic"
+            }, 
+            {name: "Support",
+              link: "/support"
+            }, 
+            {name: "Community",
+              link: "/community"
+            },{name: "Blog",
+              link: "/blogs"
+            }].map((link) => (
+              <li key={link.name}>
+                <Link to={link.link}  className="hover:text-green-400 transition">
+                  {link.name}
                 </Link>
               </li>
             ))}

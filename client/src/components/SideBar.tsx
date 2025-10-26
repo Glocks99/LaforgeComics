@@ -4,14 +4,25 @@ import {
   LogOut,
   HeartPlus,
   User,
+  CircleQuestionMark,
+  ChevronRight,
 } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
-// import { assets } from "../assets/assets";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import Modal from "./Modal";
+import {faqData} from "../pages/Settings"
 
 const SideBar = () => {
   const { isMenuOpen, setIsMenuOpen, user, logout, darkMode } =
     useAppContext();
+   const [isFaqOpen, setIsFaqOpen] = useState(false);
+   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+
+   const toggleFAQ = (index: number) => {
+    setOpenFAQ(openFAQ === index ? null : index);
+  };
+
 
   const links = [
     { name: "Home", icon: <Home size={20} />, href: "/" },
@@ -29,6 +40,37 @@ const SideBar = () => {
           onClick={() => setIsMenuOpen(false)}
         />
       )}
+
+      {/* FAQ Modal (Collapsible) */}
+        <Modal
+          isOpen={isFaqOpen}
+          onClose={() => setIsFaqOpen(false)}
+          title="Frequently asked questions"
+        >
+          <div className="text-white">
+            {faqData.map((faq, index) => (
+              <div key={index} className="border-b border-white/10 py-1.5 mt-2">
+                <p
+                  className="font-bold cursor-pointer flex justify-between items-center"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  {faq.question}
+                  <ChevronRight
+                    size={16}
+                    className={`transition-transform ${
+                      openFAQ === index ? "rotate-90" : ""
+                    }`}
+                  />
+                </p>
+                {openFAQ === index && (
+                  <p className="bg-white/10 p-1 rounded-lg text-sm mt-1 transition-all duration-300">
+                    {faq.answer}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </Modal>
 
       {/* Sidebar */}
       <div
@@ -54,10 +96,13 @@ const SideBar = () => {
               <span className="text-sm font-medium">{link.name}</span>
             </Link>
           ))}
+          <button onClick={() => {
+            setIsFaqOpen(true)
+            setIsMenuOpen(false)
+            }}  className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-blue-500 hover:text-white transition text-sm font-medium"><CircleQuestionMark size={20} /> FAQ</button>
         </nav>
 
        
-
         {user.isLoggedIn && (
           <div
             onClick={() => {

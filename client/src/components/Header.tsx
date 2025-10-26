@@ -80,7 +80,7 @@ const Header = () => {
   };
 
   return (
-    <header className={`${darkMode ? "bg-white text-gray-600" : "bg-[#1a1f2b] text-white"} overflow-hidden shadow-md sticky top-0 z-40`}>
+    <header className={`${darkMode ? "bg-white text-gray-600" : "bg-[#1a1f2b] text-white"} overflow-hidden shadow-md sticky top-0 z-60`}>
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 sm:px-10 py-4 border-b border-[#32485e]">
         {/* Left: User Profile / Login */}

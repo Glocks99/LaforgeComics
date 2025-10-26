@@ -133,7 +133,7 @@ const Carousel = ({ isHovered }: { isHovered: boolean }) => {
 
           {/* Description */}
           <div className="flex justify-center sm:justify-end">
-            <p className="text-sm sm:text-lg text-gray-200 sm:w-[50%] text-center sm:text-right backdrop-blur-md bg-white/5 border border-white/10 p-3 rounded-xl shadow-md">
+            <p className="text-sm sm:text-lg text-gray-200 sm:w-[50%] text-center sm:text-right backdrop-blur-md bg-white/5 border border-white/10 p-3 rounded-xl shadow-md line-clamp-3">
               {current.comic?.description}
             </p>
           </div>

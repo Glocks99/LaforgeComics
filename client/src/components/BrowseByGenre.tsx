@@ -81,7 +81,7 @@ const BrowseByGenre = () => {
   };
 
   return (
-    <section className={`${darkMode ? "bg-white" : "bg-[#1c2533]"} mt-12 px-4 sm:px-8 py-10 rounded-t-3xl shadow-inner`}>
+    <section id="genres"  className={`${darkMode ? "bg-white" : "bg-[#1c2533]"} mt-12 px-4 sm:px-8 py-10 rounded-t-3xl shadow-inner`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">

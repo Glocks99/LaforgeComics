@@ -1,12 +1,12 @@
 const user = require("../models/user")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
-const transporter = require("../config/mailer.js")
-const { welcomeTemplate, verifyOtpTemplate } = require("../public/Templates/welcome.js")
+const {sendEmail} = require("../config/mailer.js")
+const { welcomeTemplate, verifyOtpTemplate } = require("../utils/Templates/welcome.js")
 
 
 const register = async(req,res) => {
-    const {firstName, lastName, email, phone, password, role} = req.body
+    const {firstName, lastName, email, phone, password} = req.body
     try {
         const exitsingUser = await user.findOne({$or: [{email},{phone}]})
 
@@ -20,7 +20,7 @@ const register = async(req,res) => {
             email,
             phone,
             password: await bcrypt.hash(password, 10),
-            role: !role ? "2" : role
+            isAdmin: false
         })
 
         await newUser.save()
@@ -38,16 +38,11 @@ const register = async(req,res) => {
         .replace("{{firstName}}", newUser.firstName)
         .replace("{{currentYear}}", new Date().getFullYear());
 
-
-        const mailOptions = {
-            from: "jameslarbie30@gmail.com",
+        await sendEmail({
             to: newUser.email,
-            subject: "Welcome to Comic commerce",
+            subject: "Welcome to LaForge Comics",
             html: template
-            
-        }
-
-        await transporter.sendMail(mailOptions)
+        })
 
         return res.json({success: true, msg: "registration successful"})
     } catch (error) {
@@ -132,17 +127,16 @@ const sendVerificationOTP = async(req,res) => {
         const OTP = String(Math.round(100000 + Math.random() * 900000))
 
         const mailOptions = {
-            from: "jameslarbie30@gmail.com",
             to: User.email,
             subject: "Verify Email",
             html: verifyOtpTemplate
-            .replace("{{subject}}", "Email Verification Code")
+            .replace("{{title}}", "Email Verification Code")
             .replace("{{firstName}}", User.firstName)
             .replace("{{otpCode}}", OTP)
             .replace("{{currentYear}}", "2025")
         }
 
-        await transporter.sendMail(mailOptions)
+        await sendEmail(mailOptions)
 
         User.verificationOTP = OTP
         User.verificationOTPExpiresAt = Date.now() + 2 * 60 * 60 *1000
@@ -213,17 +207,16 @@ const sendResetOTP = async(req,res) => {
         const OTP = String(Math.round(100000 + Math.random() * 900000))
 
         const mailOptions = {
-            from: "jameslarbie30@gmail.com",
             to: User.email,
             subject: "Reset Password OTP",
             html: verifyOtpTemplate
-            .replace("{{subject}}", "Reset Password OTP")
+            .replace("{{title}}", "Reset Password OTP")
             .replace("{{firstName}}", User.firstName)
             .replace("{{otpCode}}", OTP)
             .replace("{{currentYear}}", "2025")
         }
 
-        await transporter.sendMail(mailOptions)
+        await sendEmail(mailOptions)
 
         User.resetOTP = OTP
         User.resetOTPExpiresAt = Date.now() + 2 * 60 * 60 *1000
@@ -307,23 +300,55 @@ const getAllUsers = async(req,res) => {
     }
 }
 
-const updateUser = async(req,res) => {
-    const {firstName, lastName, email, phone, isAdmin, isVerified} = req.body
-    const {id} = req.params
-    try {
-        const account = await user.findByIdAndUpdate(id,
-            {firstName,lastName,email,phone,isAdmin,isVerified}, {new: true}
-        )
+const updateUser = async (req, res) => {
+  try {
+    const { firstName, lastName, email, phone, isAdmin, isVerified, oldPassword, newPassword } = req.body;
+    const { id } = req.params;
 
-        if(!account){
-            return res.json({success: false, msg: "cannot update user"})
-        }
-
-        return res.json({success: true, msg: "user updated successfully"})
-    } catch (error) {
-        return res.json({success: false, msg: error.message})
+    const account = await user.findById(id);
+    if (!account) {
+      return res.json({ success: false, msg: "User not found" });
     }
-}
+
+    if (oldPassword) {
+      const isMatch = await bcrypt.compare(oldPassword, account.password);
+      if (!isMatch) {
+        return res.json({ success: false, msg: "Old password is incorrect" });
+      }
+
+      if (newPassword) {
+        const salt = await bcrypt.genSalt(10);
+        account.password = await bcrypt.hash(newPassword, salt);
+      }
+    }
+
+    account.firstName = firstName || account.firstName;
+    account.lastName = lastName || account.lastName;
+    account.email = email || account.email;
+    account.phone = phone || account.phone;
+    if (typeof isAdmin !== "undefined") account.isAdmin = isAdmin;
+    if (typeof isVerified !== "undefined") account.isVerified = isVerified;
+
+    await account.save();
+
+    return res.json({
+      success: true,
+      msg: "User updated successfully",
+      user: {
+        id: account._id,
+        firstName: account.firstName,
+        lastName: account.lastName,
+        phone: account.phone,
+        email: account.email,
+        isAdmin: account.isAdmin,
+        isVerified: account.isVerified,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.json({ success: false, msg: "Server error", error: error.message });
+  }
+};
 
 const deleteUser = async(req,res) => {
     const {id} = req.params

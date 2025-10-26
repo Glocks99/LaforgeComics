@@ -25,6 +25,9 @@ import Analytics from "./pages/admin/Analytics";
 import ComicPage from "./components/ComicPage"
 import FeedDetail from "./pages/FeedDetail";
 import Favourites from "./pages/Favourites";
+import Settings from "./pages/Settings";
+import SubmitComic from "./pages/SubmitComic";
+import Support from "./pages/Support";
 
 function App() {
   useEffect(() => {
@@ -62,6 +65,9 @@ function App() {
         <Route path="artist/:id" element={<ArtistDetail />} />
         <Route path="/feed" element={<FeedDetail />} />
         <Route path="/likes" element={<Favourites />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/submit-comic" element={<SubmitComic />} />
+        <Route path="/support" element={<Support />} />
 
         <Route path="/admin">
           <Route path="overview" element={<Dashboard />} />

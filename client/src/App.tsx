@@ -28,8 +28,14 @@ import Favourites from "./pages/Favourites";
 import Settings from "./pages/Settings";
 import SubmitComic from "./pages/SubmitComic";
 import Support from "./pages/Support";
+import {useDynamicThemeColor} from "./hooks/useDynamicThemeColor"
+import { useAppContext } from "./context/AppContext";
 
 function App() {
+  const {darkMode} = useAppContext()
+
+  useDynamicThemeColor(darkMode)
+  
   useEffect(() => {
     Aos.init({ duration: 800, once: true });
   }, []);

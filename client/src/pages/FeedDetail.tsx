@@ -399,7 +399,7 @@ const FeedDetail = () => {
         }`}
       >
         {filteredComics.map((comic, index) => {
-          const isLast = allComics.length === index + 1;
+          const isLast = filteredComics.length === index + 1;
 
           if(isLast){
             return (

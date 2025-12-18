@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../utils/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import Skeleton from "react-loading-skeleton";
@@ -70,12 +70,15 @@ const FeedDetail = () => {
     user?.user?.id || parsedUser?._id || parsedUser?.id || null;
 
   // Infinite scroll states
-  const [, setPage] = useState(1);
+  const [page, setPage] = useState(1);
+
+  // keep `page` referenced to avoid TS unused-var error; page-driven fetching is triggered when observer increments it
+  useEffect(() => {}, [page]);
   const [hasMore, setHasMore] = useState(true);
 
   const getGenres = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BackendURL}/api/genres`);
+      const { data } = await api.get(`/api/genres`);
       if (data.success) {
         const names = data.msg.map((g: Genre) => g.name);
         setGenre((prev) => [...prev, ...names]);
@@ -92,9 +95,7 @@ const FeedDetail = () => {
   const getUserLikes = async () => {
     try {
       if (!userId) return;
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_BackendURL}/api/likes/user/${userId}`
-      );
+      const { data } = await api.get(`/api/likes/user/${userId}`);
       if (data.success) {
         setLikedComics(data.likes.map((like: any) => like.comic));
       }
@@ -134,9 +135,7 @@ const FeedDetail = () => {
   const getComics = async (pageNum: number) => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_BackendURL}/api/comics?page=${pageNum}&limit=5`
-      );
+      const { data } = await api.get(`/api/comics?page=${pageNum}&limit=5`);
 
       if (data.success) {
         const comics = data.msg;
@@ -144,9 +143,7 @@ const FeedDetail = () => {
         const updatedComics = await Promise.all(
           comics.map(async (comic: any) => {
             const likeCount = await getComicsLikes(comic._id);
-            const commentsData = await axios.get(
-              `${import.meta.env.VITE_BackendURL}/api/comments/${comic._id}/total`
-            );
+            const commentsData = await api.get(`/api/comments/${comic._id}/total`);
             const total = commentsData.data?.totalComments || 0;
             setTotalComments((prev) => ({ ...prev, [comic._id]: total }));
             return { ...comic, likeCount };
@@ -173,7 +170,7 @@ const FeedDetail = () => {
         if (entries[0].isIntersecting && hasMore) {
           setPage((prevPage) => {
             const nextPage = prevPage + 1;
-            // getComics(nextPage);
+            getComics(nextPage);
             return nextPage;
           });
         }
@@ -185,6 +182,13 @@ const FeedDetail = () => {
   );
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
+
 
   const scrollByCard = (direction: "up" | "down") => {
     if(isCommentsOpen) return;
@@ -205,10 +209,7 @@ const FeedDetail = () => {
 
     try {
       if (likedComics.includes(comicId)) {
-        const { data } = await axios.delete(
-          `${import.meta.env.VITE_BackendURL}/api/likes/${comicId}`,
-          { data: { userId } }
-        );
+        const { data } = await api.delete(`/api/likes/${comicId}`, { data: { userId } });
         if (data.success) {
           setLikedComics((prev) => prev.filter((id) => id !== comicId));
           setAllComics((prev) =>
@@ -220,10 +221,7 @@ const FeedDetail = () => {
           );
         }
       } else {
-        const { data } = await axios.post(`${import.meta.env.VITE_BackendURL}/api/likes`, {
-          userId,
-          comicId,
-        });
+        const { data } = await api.post(`/api/likes`, { userId, comicId });
         if (data.success) {
           setLikedComics((prev) => [...prev, comicId]);
           setAllComics((prev) =>
@@ -258,9 +256,7 @@ const FeedDetail = () => {
 
   const getComicsLikes = async (comicId: string) => {
     try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_BackendURL}/api/likes/comic/${comicId}`
-      );
+      const { data } = await api.get(`/api/likes/comic/${comicId}`);
       if (data.success) return data.totalLikes || 0;
     } catch (error) {
       console.error("Error fetching comic likes:", error);
@@ -280,11 +276,7 @@ const FeedDetail = () => {
       return;
     }
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BackendURL}/api/comments`, {
-        userId,
-        comicId,
-        text,
-      });
+      const { data } = await api.post(`/api/comments`, { userId, comicId, text });
       if (data.success) {
         setComments((prev) => [data.comment, ...prev]);
         setText("");
@@ -300,9 +292,7 @@ const FeedDetail = () => {
 
   const fetchCommentCount = async (comicId: string) => {
     try {
-      const { data } = await axios.get<CommentCountResponse>(
-        `${import.meta.env.VITE_BackendURL}/api/comments/${comicId}/total`
-      );
+      const { data } = await api.get<CommentCountResponse>(`/api/comments/${comicId}/total`);
       if (data.success) {
         setTotalComments((prev) => ({
           ...prev,
@@ -400,353 +390,178 @@ const FeedDetail = () => {
       >
         {filteredComics.map((comic, index) => {
           const isLast = filteredComics.length === index + 1;
+          return (
+            <div
+              key={comic._id}
+              ref={isLast ? lastComic : null}
+              className="relative flex h-full w-full sm:w-[400px] snap-start"
+            >
+            
+              <div className="relative flex flex-col w-full h-screen">
+                {/* Image Section */}
+                <div
+                  className={`transition-all duration-300 origin-top-left bg-black w-full overflow-hidden ${
+                    isCommentsOpen
+                      ? "h-[20%] sm:h-screen"
+                      : "h-screen"
+                  }`}
+                >
+                  <img
+                    src={
+                      comic.coverImage ||
+                      "/assets/carousel-images/cover/Superman-Cover.jpeg"
+                    }
+                    alt={comic.name}
+                    className={`w-full h-full ${
+                      isCommentsOpen ? "object-contain sm:object-cover" : "object-cover"
+                    }`}
+                  />
+                </div>
 
-          if(isLast){
-            return (
-              <div
-                key={comic._id}
-                ref={lastComic}
-                className="relative flex h-full w-full sm:w-[400px] snap-start"
-              >
-              
-                <div className="relative flex flex-col w-full h-screen">
-                  {/* Image Section */}
-                  <div
-                    className={`transition-all duration-300 origin-top-left bg-black w-full overflow-hidden ${
-                      isCommentsOpen
-                        ? "h-[20%] sm:h-screen"
-                        : "h-screen"
-                    }`}
-                  >
-                    <img
-                      src={
-                        comic.coverImage ||
-                        "/assets/carousel-images/cover/Superman-Cover.jpeg"
-                      }
-                      alt={comic.name}
-                      className={`w-full h-full ${
-                        isCommentsOpen ? "object-contain sm:object-cover" : "object-cover"
-                      }`}
-                    />
+                {/* Comments Section (mobile only) */}
+                <div
+                  className={`flex sm:hidden z-10 flex-col transition-all duration-300 origin-bottom w-full overflow-hidden ${
+                    isCommentsOpen
+                      ? "h-[80%] opacity-100"
+                      : "h-0 opacity-0"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-sm p-1 border-b border-white/10">
+                    <p>comments({totalComments[comic._id] ?? 0})</p>
+                    <button onClick={() => setIsCommentsOpen(!isCommentsOpen)}>
+                      <X />
+                    </button>
                   </div>
-  
-                  {/* Comments Section (mobile only) */}
-                  <div
-                    className={`flex sm:hidden z-10 flex-col transition-all duration-300 origin-bottom w-full overflow-hidden ${
-                      isCommentsOpen
-                        ? "h-[80%] opacity-100"
-                        : "h-0 opacity-0"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-sm p-1 border-b border-white/10">
-                      <p>comments({totalComments[comic._id] ?? 0})</p>
-                      <button onClick={() => setIsCommentsOpen(!isCommentsOpen)}>
-                        <X />
+
+                  <div className="flex-1 overflow-y-auto px-2 [scrollbar-width:none]">
+                    <CommentsSection comicId={comic._id} msg={msg} />
+                  </div>
+
+                  
+
+                  <div className="h-[50px] px-2 flex items-center gap-1">
+                    <div className="bg-amber-800 h-[30px] min-w-[30px] flex items-center justify-center rounded-full">
+                      JL
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-full bg-white/10 w-full h-[80%] px-1.5">
+                      <input
+                        type="text"
+                        placeholder="Add comment"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        className="w-full h-full outline-none bg-transparent pl-1.5 text-white text-sm"
+                      />
+                      <button onClick={() => pushComment(comic._id)}>
+                        <SendHorizonal />
                       </button>
                     </div>
-  
-                    <div className="flex-1 overflow-y-auto px-2 [scrollbar-width:none]">
-                      <CommentsSection comicId={comic._id} msg={msg} />
-                    </div>
-  
-                    
-  
-                    <div className="h-[50px] px-2 flex items-center gap-1">
-                      <div className="bg-amber-800 h-[30px] min-w-[30px] flex items-center justify-center rounded-full">
-                        JL
-                      </div>
-                      <div className="flex items-center gap-1.5 rounded-full bg-white/10 w-full h-[80%] px-1.5">
-                        <input
-                          type="text"
-                          placeholder="Add comment"
-                          value={text}
-                          onChange={(e) => setText(e.target.value)}
-                          className="w-full h-full outline-none bg-transparent pl-1.5 text-white text-sm"
-                        />
-                        <button onClick={() => pushComment(comic._id)}>
-                          <SendHorizonal />
-                        </button>
-                      </div>
-                    </div>
                   </div>
-  
-                  {/* Floating Action Buttons (mobile only) */}
-                  {!isCommentsOpen && (
-                    <div className="sm:hidden absolute right-2 inset-y-0 flex flex-col justify-center gap-3 z-10">
-                      <div
-                        onClick={() => handleLike(comic._id)}
-                        className="flex flex-col items-center gap-1 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10 p-1.5"
-                      >
-                        {likedComics.includes(comic._id) ? "❤️" : "🤍"}
-                        <span className="text-xs font-medium">
-                          {comic.likeCount ?? 0}
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => setIsCommentsOpen(!isCommentsOpen)}
-                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
-                      >
-                        <MessageSquare className="w-5 h-5 text-sky-300" />
-                        <span className="text-xs font-medium">
-                          {totalComments[comic._id] ?? 0}
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => handleShare(comic)}
-                        className="flex items-center justify-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
-                      >
-                        <Share2 className="w-5 h-5" />
-                      </div>
-                    </div>
-                  )}
-  
-                  {/* Comic details overlay */}
-                  {!isCommentsOpen && (
-                    <div className="absolute bottom-0 sm:bottom-8 left-0 w-full p-2 z-10 flex flex-col justify-end">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-2xl sm:text-sm font-bold line-clamp-1">
-                          {comic.name}
-                        </span>
-                        •
-                        <span className="text-sm opacity-70 sm:text-xs">
-                          {comic.author?.name || "Unknown"}
-                        </span>
-                        •
-                        <span className="ml-2 sm:text-xs inline-block min-w-fit text-xs px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm">
-                          {comic.episodes?.length} Episodes
-                        </span>
-                      </div>
-  
-                      <p className="mt-2 sm:mt-1 text-sm sm:text-xs font-light text-white/85 line-clamp-3">
-                        {comic.description}
-                      </p>
-  
-                      <div className="flex gap-2 flex-wrap mt-1">
-                        {comic.tags?.map((tag) => (
-                          <p
-                            key={tag}
-                            className="text-xs px-2 py-0.5 rounded bg-white/10"
-                          >
-                            {tag}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-  
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none transition-all duration-300"></div>
                 </div>
-  
-                {/* Desktop action buttons */}
-                <div className="hidden sm:flex w-[50px] flex-col items-center justify-center p-2">
-                  <button
-                    onClick={() => handleLike(comic._id)}
-                    className="p-2 flex flex-col items-center rounded-full cursor-pointer"
-                  >
-                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
+
+                {/* Floating Action Buttons (mobile only) */}
+                {!isCommentsOpen && (
+                  <div className="sm:hidden absolute right-2 inset-y-0 flex flex-col justify-center gap-3 z-10">
+                    <div
+                      onClick={() => handleLike(comic._id)}
+                      className="flex flex-col items-center gap-1 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10 p-1.5"
+                    >
                       {likedComics.includes(comic._id) ? "❤️" : "🤍"}
-                    </span>
-                    <span className="font-medium text-xs">
-                      {comic.likeCount ?? 0}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsCommentsOpen(true);
-                      setActiveComicId(comic._id);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
-                      <MessageSquare />
-                    </span>
-                    <span className="font-medium text-xs">
-                      {totalComments[comic._id] ?? 0}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => handleShare(comic)}
-                    className="cursor-pointer bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center"
-                  >
-                    <Share2 />
-                  </button>
-                </div>
-              </div>
-            );
-          }else{
-            return (
-              <div
-                key={comic._id}
-                className="relative flex h-full w-full sm:w-[400px] snap-start"
-              >
-              
-                <div className="relative flex flex-col w-full h-screen">
-                  {/* Image Section */}
-                  <div
-                    className={`transition-all duration-300 origin-top-left bg-black w-full overflow-hidden ${
-                      isCommentsOpen
-                        ? "h-[20%] sm:h-screen"
-                        : "h-screen"
-                    }`}
-                  >
-                    <img
-                      src={
-                        comic.coverImage ||
-                        "/assets/carousel-images/cover/Superman-Cover.jpeg"
-                      }
-                      alt={comic.name}
-                      className={`w-full h-full ${
-                        isCommentsOpen ? "object-contain sm:object-cover" : "object-cover"
-                      }`}
-                    />
-                  </div>
-  
-                  {/* Comments Section (mobile only) */}
-                  <div
-                    className={`flex sm:hidden z-10 flex-col transition-all duration-300 origin-bottom w-full overflow-hidden ${
-                      isCommentsOpen
-                        ? "h-[80%] opacity-100"
-                        : "h-0 opacity-0"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-sm p-1 border-b border-white/10">
-                      <p>comments({totalComments[comic._id] ?? 0})</p>
-                      <button onClick={() => setIsCommentsOpen(!isCommentsOpen)}>
-                        <X />
-                      </button>
+                      <span className="text-xs font-medium">
+                        {comic.likeCount ?? 0}
+                      </span>
                     </div>
-  
-                    <div className="flex-1 overflow-y-auto px-2 [scrollbar-width:none]">
-                      <CommentsSection comicId={comic._id} msg={msg} />
+                    <div
+                      onClick={() => setIsCommentsOpen(!isCommentsOpen)}
+                      className="flex flex-col items-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
+                    >
+                      <MessageSquare className="w-5 h-5 text-sky-300" />
+                      <span className="text-xs font-medium">
+                        {totalComments[comic._id] ?? 0}
+                      </span>
                     </div>
-  
-                    
-  
-                    <div className="h-[50px] px-2 flex items-center gap-1">
-                      <div className="bg-amber-800 h-[30px] min-w-[30px] flex items-center justify-center rounded-full">
-                        JL
-                      </div>
-                      <div className="flex items-center gap-1.5 rounded-full bg-white/10 w-full h-[80%] px-1.5">
-                        <input
-                          type="text"
-                          placeholder="Add comment"
-                          value={text}
-                          onChange={(e) => setText(e.target.value)}
-                          className="w-full h-full outline-none bg-transparent pl-1.5 text-white text-sm"
-                        />
-                        <button onClick={() => pushComment(comic._id)}>
-                          <SendHorizonal />
-                        </button>
-                      </div>
+                    <div
+                      onClick={() => handleShare(comic)}
+                      className="flex items-center justify-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
+                    >
+                      <Share2 className="w-5 h-5" />
                     </div>
                   </div>
-  
-                  {/* Floating Action Buttons (mobile only) */}
-                  {!isCommentsOpen && (
-                    <div className="sm:hidden absolute right-2 inset-y-0 flex flex-col justify-center gap-3 z-10">
-                      <div
-                        onClick={() => handleLike(comic._id)}
-                        className="flex flex-col items-center gap-1 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10 p-1.5"
-                      >
-                        {likedComics.includes(comic._id) ? "❤️" : "🤍"}
-                        <span className="text-xs font-medium">
-                          {comic.likeCount ?? 0}
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => setIsCommentsOpen(!isCommentsOpen)}
-                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
-                      >
-                        <MessageSquare className="w-5 h-5 text-sky-300" />
-                        <span className="text-xs font-medium">
-                          {totalComments[comic._id] ?? 0}
-                        </span>
-                      </div>
-                      <div
-                        onClick={() => handleShare(comic)}
-                        className="flex items-center justify-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
-                      >
-                        <Share2 className="w-5 h-5" />
-                      </div>
+                )}
+
+                {/* Comic details overlay */}
+                {!isCommentsOpen && (
+                  <div className="absolute bottom-0 sm:bottom-8 left-0 w-full p-2 z-10 flex flex-col justify-end">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-2xl sm:text-sm font-bold line-clamp-1">
+                        {comic.name}
+                      </span>
+                      •
+                      <span className="text-sm opacity-70 sm:text-xs">
+                        {comic.author?.name || "Unknown"}
+                      </span>
+                      •
+                      <span className="ml-2 sm:text-xs inline-block min-w-fit text-xs px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm">
+                        {comic.episodes?.length} Episodes
+                      </span>
                     </div>
-                  )}
-  
-                  {/* Comic details overlay */}
-                  {!isCommentsOpen && (
-                    <div className="absolute bottom-0 sm:bottom-8 left-0 w-full p-2 z-10 flex flex-col justify-end">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-2xl sm:text-sm font-bold line-clamp-1">
-                          {comic.name}
-                        </span>
-                        •
-                        <span className="text-sm opacity-70 sm:text-xs">
-                          {comic.author?.name || "Unknown"}
-                        </span>
-                        •
-                        <span className="ml-2 sm:text-xs inline-block min-w-fit text-xs px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm">
-                          {comic.episodes?.length} Episodes
-                        </span>
-                      </div>
-  
-                      <p className="mt-2 sm:mt-1 text-sm sm:text-xs font-light text-white/85 line-clamp-3">
-                        {comic.description}
-                      </p>
-  
-                      <div className="flex gap-2 flex-wrap mt-1">
-                        {comic.tags?.map((tag) => (
-                          <p
-                            key={tag}
-                            className="text-xs px-2 py-0.5 rounded bg-white/10"
-                          >
-                            {tag}
-                          </p>
-                        ))}
-                      </div>
+
+                    <p className="mt-2 sm:mt-1 text-sm sm:text-xs font-light text-white/85 line-clamp-3">
+                      {comic.description}
+                    </p>
+
+                    <div className="flex gap-2 flex-wrap mt-1">
+                      {comic.tags?.map((tag) => (
+                        <p
+                          key={tag}
+                          className="text-xs px-2 py-0.5 rounded bg-white/10"
+                        >
+                          {tag}
+                        </p>
+                      ))}
                     </div>
-                  )}
-  
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none transition-all duration-300"></div>
-                </div>
-  
-                {/* Desktop action buttons */}
-                <div className="hidden sm:flex w-[50px] flex-col items-center justify-center p-2">
-                  <button
-                    onClick={() => handleLike(comic._id)}
-                    className="p-2 flex flex-col items-center rounded-full cursor-pointer"
-                  >
-                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
-                      {likedComics.includes(comic._id) ? "❤️" : "🤍"}
-                    </span>
-                    <span className="font-medium text-xs">
-                      {comic.likeCount ?? 0}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsCommentsOpen(true);
-                      setActiveComicId(comic._id);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
-                      <MessageSquare />
-                    </span>
-                    <span className="font-medium text-xs">
-                      {totalComments[comic._id] ?? 0}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => handleShare(comic)}
-                    className="cursor-pointer bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center"
-                  >
-                    <Share2 />
-                  </button>
-                </div>
+                  </div>
+                )}
+
+                {/* Overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none transition-all duration-300"></div>
               </div>
-            );
-          }
+
+              {/* Desktop action buttons */}
+              <div className="hidden sm:flex w-[50px] flex-col items-center justify-center p-2">
+                <button
+                  onClick={() => handleLike(comic._id)}
+                  className="p-2 flex flex-col items-center rounded-full cursor-pointer"
+                >
+                  <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
+                    {likedComics.includes(comic._id) ? "❤️" : "🤍"}
+                  </span>
+                  <span className="font-medium text-xs">
+                    {comic.likeCount ?? 0}
+                  </span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsCommentsOpen(true);
+                    setActiveComicId(comic._id);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
+                    <MessageSquare />
+                  </span>
+                  <span className="font-medium text-xs">
+                    {totalComments[comic._id] ?? 0}
+                  </span>
+                </button>
+                <button
+                  onClick={() => handleShare(comic)}
+                  className="cursor-pointer bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center"
+                >
+                  <Share2 />
+                </button>
+              </div>
+            </div>
+          );
         })}
       </div>
 
@@ -798,8 +613,8 @@ const FeedDetail = () => {
           {isCommentsOpen && (
             <div className="absolute bottom-0 w-full h-[50px] px-1 flex items-center gap-1.5 bg-[#010203be]">
               <div className="bg-black/25 w-10 h-10 flex items-center justify-center rounded-full">
-                {user.user?.firstName[0].toUpperCase()}
-                {user.user?.lastName[0].toUpperCase()}
+                {user.user?.firstName?.[0]?.toUpperCase() || ""}
+                {user.user?.lastName?.[0]?.toUpperCase() || ""}
               </div>
               <div className="flex-1 h-[40px] flex items-center bg-[#1234] rounded-full">
                 <input

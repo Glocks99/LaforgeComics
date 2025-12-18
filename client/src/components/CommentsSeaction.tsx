@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 interface Comment {
   _id: string;
@@ -49,7 +49,7 @@ const CommentsSection = ({ comicId, msg }: { comicId: string; msg: string }) => 
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BackendURL}/api/comments/comic/${comicId}`);
+      const { data } = await api.get(`/api/comments/comic/${comicId}`);
       if (isMounted && data.success) setComments(data.comments);
     } catch (err) {
       console.error(err);
@@ -80,10 +80,10 @@ const CommentsSection = ({ comicId, msg }: { comicId: string; msg: string }) => 
             >
                 <div
                   className="h-8 w-8 flex items-center justify-center rounded-full text-white font-semibold"
-                  style={{ backgroundColor: getColorFromName(comment.user.firstName + comment.user.lastName) }}
+                  style={{ backgroundColor: getColorFromName((comment.user?.firstName ?? "") + (comment.user?.lastName ?? "")) }}
                 >
-                  {comment.user.firstName[0].toUpperCase()}
-                  {comment.user.lastName[0].toUpperCase()}
+                  {comment.user?.firstName?.[0]?.toUpperCase() || "?"}
+                  {comment.user?.lastName?.[0]?.toUpperCase() || "?"}
                 </div>
 
           

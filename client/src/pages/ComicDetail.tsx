@@ -9,9 +9,10 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+
 import { useAppContext } from "../context/AppContext";
 import RatingCard from "../components/RatingCard";
+import api from "../utils/api";
 
 interface Episode {
   _id: string;
@@ -44,8 +45,7 @@ const ComicDetail = () => {
 
   const getComicById = async () => {
     try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_BackendURL}/api/comics/${id}`
+      const { data } = await api.get(`/api/comics/${id}`
       );
 
       if (data.success) {

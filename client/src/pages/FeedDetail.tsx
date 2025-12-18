@@ -400,178 +400,353 @@ const FeedDetail = () => {
       >
         {filteredComics.map((comic, index) => {
           const isLast = allComics.length === index + 1;
-          return (
-            <div
-              key={comic._id}
-              ref={isLast ? lastComic : null}
-              className="relative flex h-full w-full sm:w-[400px] snap-start"
-            >
-            
-              <div className="relative flex flex-col w-full h-screen">
-                {/* Image Section */}
-                <div
-                  className={`transition-all duration-300 origin-top-left bg-black w-full overflow-hidden ${
-                    isCommentsOpen
-                      ? "h-[20%] sm:h-screen"
-                      : "h-screen"
-                  }`}
-                >
-                  <img
-                    src={
-                      comic.coverImage ||
-                      "/assets/carousel-images/cover/Superman-Cover.jpeg"
-                    }
-                    alt={comic.name}
-                    className={`w-full h-full ${
-                      isCommentsOpen ? "object-contain sm:object-cover" : "object-cover"
+
+          if(isLast){
+            return (
+              <div
+                key={comic._id}
+                ref={lastComic}
+                className="relative flex h-full w-full sm:w-[400px] snap-start"
+              >
+              
+                <div className="relative flex flex-col w-full h-screen">
+                  {/* Image Section */}
+                  <div
+                    className={`transition-all duration-300 origin-top-left bg-black w-full overflow-hidden ${
+                      isCommentsOpen
+                        ? "h-[20%] sm:h-screen"
+                        : "h-screen"
                     }`}
-                  />
-                </div>
-
-                {/* Comments Section (mobile only) */}
-                <div
-                  className={`flex sm:hidden z-10 flex-col transition-all duration-300 origin-bottom w-full overflow-hidden ${
-                    isCommentsOpen
-                      ? "h-[80%] opacity-100"
-                      : "h-0 opacity-0"
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-sm p-1 border-b border-white/10">
-                    <p>comments({totalComments[comic._id] ?? 0})</p>
-                    <button onClick={() => setIsCommentsOpen(!isCommentsOpen)}>
-                      <X />
-                    </button>
+                  >
+                    <img
+                      src={
+                        comic.coverImage ||
+                        "/assets/carousel-images/cover/Superman-Cover.jpeg"
+                      }
+                      alt={comic.name}
+                      className={`w-full h-full ${
+                        isCommentsOpen ? "object-contain sm:object-cover" : "object-cover"
+                      }`}
+                    />
                   </div>
-
-                  <div className="flex-1 overflow-y-auto px-2 [scrollbar-width:none]">
-                    <CommentsSection comicId={comic._id} msg={msg} />
-                  </div>
-
-                  
-
-                  <div className="h-[50px] px-2 flex items-center gap-1">
-                    <div className="bg-amber-800 h-[30px] min-w-[30px] flex items-center justify-center rounded-full">
-                      JL
-                    </div>
-                    <div className="flex items-center gap-1.5 rounded-full bg-white/10 w-full h-[80%] px-1.5">
-                      <input
-                        type="text"
-                        placeholder="Add comment"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        className="w-full h-full outline-none bg-transparent pl-1.5 text-white text-sm"
-                      />
-                      <button onClick={() => pushComment(comic._id)}>
-                        <SendHorizonal />
+  
+                  {/* Comments Section (mobile only) */}
+                  <div
+                    className={`flex sm:hidden z-10 flex-col transition-all duration-300 origin-bottom w-full overflow-hidden ${
+                      isCommentsOpen
+                        ? "h-[80%] opacity-100"
+                        : "h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-sm p-1 border-b border-white/10">
+                      <p>comments({totalComments[comic._id] ?? 0})</p>
+                      <button onClick={() => setIsCommentsOpen(!isCommentsOpen)}>
+                        <X />
                       </button>
                     </div>
+  
+                    <div className="flex-1 overflow-y-auto px-2 [scrollbar-width:none]">
+                      <CommentsSection comicId={comic._id} msg={msg} />
+                    </div>
+  
+                    
+  
+                    <div className="h-[50px] px-2 flex items-center gap-1">
+                      <div className="bg-amber-800 h-[30px] min-w-[30px] flex items-center justify-center rounded-full">
+                        JL
+                      </div>
+                      <div className="flex items-center gap-1.5 rounded-full bg-white/10 w-full h-[80%] px-1.5">
+                        <input
+                          type="text"
+                          placeholder="Add comment"
+                          value={text}
+                          onChange={(e) => setText(e.target.value)}
+                          className="w-full h-full outline-none bg-transparent pl-1.5 text-white text-sm"
+                        />
+                        <button onClick={() => pushComment(comic._id)}>
+                          <SendHorizonal />
+                        </button>
+                      </div>
+                    </div>
                   </div>
+  
+                  {/* Floating Action Buttons (mobile only) */}
+                  {!isCommentsOpen && (
+                    <div className="sm:hidden absolute right-2 inset-y-0 flex flex-col justify-center gap-3 z-10">
+                      <div
+                        onClick={() => handleLike(comic._id)}
+                        className="flex flex-col items-center gap-1 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10 p-1.5"
+                      >
+                        {likedComics.includes(comic._id) ? "❤️" : "🤍"}
+                        <span className="text-xs font-medium">
+                          {comic.likeCount ?? 0}
+                        </span>
+                      </div>
+                      <div
+                        onClick={() => setIsCommentsOpen(!isCommentsOpen)}
+                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
+                      >
+                        <MessageSquare className="w-5 h-5 text-sky-300" />
+                        <span className="text-xs font-medium">
+                          {totalComments[comic._id] ?? 0}
+                        </span>
+                      </div>
+                      <div
+                        onClick={() => handleShare(comic)}
+                        className="flex items-center justify-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </div>
+                    </div>
+                  )}
+  
+                  {/* Comic details overlay */}
+                  {!isCommentsOpen && (
+                    <div className="absolute bottom-0 sm:bottom-8 left-0 w-full p-2 z-10 flex flex-col justify-end">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-2xl sm:text-sm font-bold line-clamp-1">
+                          {comic.name}
+                        </span>
+                        •
+                        <span className="text-sm opacity-70 sm:text-xs">
+                          {comic.author?.name || "Unknown"}
+                        </span>
+                        •
+                        <span className="ml-2 sm:text-xs inline-block min-w-fit text-xs px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm">
+                          {comic.episodes?.length} Episodes
+                        </span>
+                      </div>
+  
+                      <p className="mt-2 sm:mt-1 text-sm sm:text-xs font-light text-white/85 line-clamp-3">
+                        {comic.description}
+                      </p>
+  
+                      <div className="flex gap-2 flex-wrap mt-1">
+                        {comic.tags?.map((tag) => (
+                          <p
+                            key={tag}
+                            className="text-xs px-2 py-0.5 rounded bg-white/10"
+                          >
+                            {tag}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+  
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none transition-all duration-300"></div>
                 </div>
-
-                {/* Floating Action Buttons (mobile only) */}
-                {!isCommentsOpen && (
-                  <div className="sm:hidden absolute right-2 inset-y-0 flex flex-col justify-center gap-3 z-10">
-                    <div
-                      onClick={() => handleLike(comic._id)}
-                      className="flex flex-col items-center gap-1 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10 p-1.5"
-                    >
+  
+                {/* Desktop action buttons */}
+                <div className="hidden sm:flex w-[50px] flex-col items-center justify-center p-2">
+                  <button
+                    onClick={() => handleLike(comic._id)}
+                    className="p-2 flex flex-col items-center rounded-full cursor-pointer"
+                  >
+                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
                       {likedComics.includes(comic._id) ? "❤️" : "🤍"}
-                      <span className="text-xs font-medium">
-                        {comic.likeCount ?? 0}
-                      </span>
+                    </span>
+                    <span className="font-medium text-xs">
+                      {comic.likeCount ?? 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsCommentsOpen(true);
+                      setActiveComicId(comic._id);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
+                      <MessageSquare />
+                    </span>
+                    <span className="font-medium text-xs">
+                      {totalComments[comic._id] ?? 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleShare(comic)}
+                    className="cursor-pointer bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center"
+                  >
+                    <Share2 />
+                  </button>
+                </div>
+              </div>
+            );
+          }else{
+            return (
+              <div
+                key={comic._id}
+                className="relative flex h-full w-full sm:w-[400px] snap-start"
+              >
+              
+                <div className="relative flex flex-col w-full h-screen">
+                  {/* Image Section */}
+                  <div
+                    className={`transition-all duration-300 origin-top-left bg-black w-full overflow-hidden ${
+                      isCommentsOpen
+                        ? "h-[20%] sm:h-screen"
+                        : "h-screen"
+                    }`}
+                  >
+                    <img
+                      src={
+                        comic.coverImage ||
+                        "/assets/carousel-images/cover/Superman-Cover.jpeg"
+                      }
+                      alt={comic.name}
+                      className={`w-full h-full ${
+                        isCommentsOpen ? "object-contain sm:object-cover" : "object-cover"
+                      }`}
+                    />
+                  </div>
+  
+                  {/* Comments Section (mobile only) */}
+                  <div
+                    className={`flex sm:hidden z-10 flex-col transition-all duration-300 origin-bottom w-full overflow-hidden ${
+                      isCommentsOpen
+                        ? "h-[80%] opacity-100"
+                        : "h-0 opacity-0"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-sm p-1 border-b border-white/10">
+                      <p>comments({totalComments[comic._id] ?? 0})</p>
+                      <button onClick={() => setIsCommentsOpen(!isCommentsOpen)}>
+                        <X />
+                      </button>
                     </div>
-                    <div
-                      onClick={() => setIsCommentsOpen(!isCommentsOpen)}
-                      className="flex flex-col items-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
-                    >
-                      <MessageSquare className="w-5 h-5 text-sky-300" />
-                      <span className="text-xs font-medium">
-                        {totalComments[comic._id] ?? 0}
-                      </span>
+  
+                    <div className="flex-1 overflow-y-auto px-2 [scrollbar-width:none]">
+                      <CommentsSection comicId={comic._id} msg={msg} />
                     </div>
-                    <div
-                      onClick={() => handleShare(comic)}
-                      className="flex items-center justify-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
-                    >
-                      <Share2 className="w-5 h-5" />
+  
+                    
+  
+                    <div className="h-[50px] px-2 flex items-center gap-1">
+                      <div className="bg-amber-800 h-[30px] min-w-[30px] flex items-center justify-center rounded-full">
+                        JL
+                      </div>
+                      <div className="flex items-center gap-1.5 rounded-full bg-white/10 w-full h-[80%] px-1.5">
+                        <input
+                          type="text"
+                          placeholder="Add comment"
+                          value={text}
+                          onChange={(e) => setText(e.target.value)}
+                          className="w-full h-full outline-none bg-transparent pl-1.5 text-white text-sm"
+                        />
+                        <button onClick={() => pushComment(comic._id)}>
+                          <SendHorizonal />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                )}
-
-                {/* Comic details overlay */}
-                {!isCommentsOpen && (
-                  <div className="absolute bottom-0 sm:bottom-8 left-0 w-full p-2 z-10 flex flex-col justify-end">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-2xl sm:text-sm font-bold line-clamp-1">
-                        {comic.name}
-                      </span>
-                      •
-                      <span className="text-sm opacity-70 sm:text-xs">
-                        {comic.author?.name || "Unknown"}
-                      </span>
-                      •
-                      <span className="ml-2 sm:text-xs inline-block min-w-fit text-xs px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm">
-                        {comic.episodes?.length} Episodes
-                      </span>
+  
+                  {/* Floating Action Buttons (mobile only) */}
+                  {!isCommentsOpen && (
+                    <div className="sm:hidden absolute right-2 inset-y-0 flex flex-col justify-center gap-3 z-10">
+                      <div
+                        onClick={() => handleLike(comic._id)}
+                        className="flex flex-col items-center gap-1 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10 p-1.5"
+                      >
+                        {likedComics.includes(comic._id) ? "❤️" : "🤍"}
+                        <span className="text-xs font-medium">
+                          {comic.likeCount ?? 0}
+                        </span>
+                      </div>
+                      <div
+                        onClick={() => setIsCommentsOpen(!isCommentsOpen)}
+                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
+                      >
+                        <MessageSquare className="w-5 h-5 text-sky-300" />
+                        <span className="text-xs font-medium">
+                          {totalComments[comic._id] ?? 0}
+                        </span>
+                      </div>
+                      <div
+                        onClick={() => handleShare(comic)}
+                        className="flex items-center justify-center gap-1 px-3 py-2 rounded-md backdrop-blur-md bg-gradient-to-br from-[#6dc8ff]/20 to-[#5ea9ff]/10 border border-white/10"
+                      >
+                        <Share2 className="w-5 h-5" />
+                      </div>
                     </div>
-
-                    <p className="mt-2 sm:mt-1 text-sm sm:text-xs font-light text-white/85 line-clamp-3">
-                      {comic.description}
-                    </p>
-
-                    <div className="flex gap-2 flex-wrap mt-1">
-                      {comic.tags?.map((tag) => (
-                        <p
-                          key={tag}
-                          className="text-xs px-2 py-0.5 rounded bg-white/10"
-                        >
-                          {tag}
-                        </p>
-                      ))}
+                  )}
+  
+                  {/* Comic details overlay */}
+                  {!isCommentsOpen && (
+                    <div className="absolute bottom-0 sm:bottom-8 left-0 w-full p-2 z-10 flex flex-col justify-end">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-2xl sm:text-sm font-bold line-clamp-1">
+                          {comic.name}
+                        </span>
+                        •
+                        <span className="text-sm opacity-70 sm:text-xs">
+                          {comic.author?.name || "Unknown"}
+                        </span>
+                        •
+                        <span className="ml-2 sm:text-xs inline-block min-w-fit text-xs px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm">
+                          {comic.episodes?.length} Episodes
+                        </span>
+                      </div>
+  
+                      <p className="mt-2 sm:mt-1 text-sm sm:text-xs font-light text-white/85 line-clamp-3">
+                        {comic.description}
+                      </p>
+  
+                      <div className="flex gap-2 flex-wrap mt-1">
+                        {comic.tags?.map((tag) => (
+                          <p
+                            key={tag}
+                            className="text-xs px-2 py-0.5 rounded bg-white/10"
+                          >
+                            {tag}
+                          </p>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none transition-all duration-300"></div>
+                  )}
+  
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none transition-all duration-300"></div>
+                </div>
+  
+                {/* Desktop action buttons */}
+                <div className="hidden sm:flex w-[50px] flex-col items-center justify-center p-2">
+                  <button
+                    onClick={() => handleLike(comic._id)}
+                    className="p-2 flex flex-col items-center rounded-full cursor-pointer"
+                  >
+                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
+                      {likedComics.includes(comic._id) ? "❤️" : "🤍"}
+                    </span>
+                    <span className="font-medium text-xs">
+                      {comic.likeCount ?? 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsCommentsOpen(true);
+                      setActiveComicId(comic._id);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
+                      <MessageSquare />
+                    </span>
+                    <span className="font-medium text-xs">
+                      {totalComments[comic._id] ?? 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => handleShare(comic)}
+                    className="cursor-pointer bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center"
+                  >
+                    <Share2 />
+                  </button>
+                </div>
               </div>
-
-              {/* Desktop action buttons */}
-              <div className="hidden sm:flex w-[50px] flex-col items-center justify-center p-2">
-                <button
-                  onClick={() => handleLike(comic._id)}
-                  className="p-2 flex flex-col items-center rounded-full cursor-pointer"
-                >
-                  <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
-                    {likedComics.includes(comic._id) ? "❤️" : "🤍"}
-                  </span>
-                  <span className="font-medium text-xs">
-                    {comic.likeCount ?? 0}
-                  </span>
-                </button>
-                <button
-                  onClick={() => {
-                    setIsCommentsOpen(true);
-                    setActiveComicId(comic._id);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <span className="bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center">
-                    <MessageSquare />
-                  </span>
-                  <span className="font-medium text-xs">
-                    {totalComments[comic._id] ?? 0}
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleShare(comic)}
-                  className="cursor-pointer bg-[#1234] rounded-full h-10 w-10 flex items-center justify-center"
-                >
-                  <Share2 />
-                </button>
-              </div>
-            </div>
-          );
+            );
+          }
         })}
       </div>
 

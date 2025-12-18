@@ -48,7 +48,7 @@ const ComicDetail = () => {
         `${import.meta.env.VITE_BackendURL}/api/comics/${id}`
       );
 
-      if (data?.success) {
+      if (data.success) {
         setComic(data.msg);
       }
     } catch (error: any) {

@@ -154,7 +154,7 @@ const FeedDetail = () => {
         );
 
         setAllComics((prev) => [...prev, ...updatedComics]);
-        setHasMore(data.msg.length > 0);
+        setHasMore(data.hasMore);
       }
     } catch (error) {
       console.log("Error fetching comics:", error);
@@ -173,7 +173,7 @@ const FeedDetail = () => {
         if (entries[0].isIntersecting && hasMore) {
           setPage((prevPage) => {
             const nextPage = prevPage + 1;
-            getComics(nextPage);
+            // getComics(nextPage);
             return nextPage;
           });
         }
@@ -402,7 +402,7 @@ const FeedDetail = () => {
           const isLast = allComics.length === index + 1;
           return (
             <div
-              key={index}
+              key={comic._id}
               ref={isLast ? lastComic : null}
               className="relative flex h-full w-full sm:w-[400px] snap-start"
             >

@@ -57,6 +57,7 @@ const AppContext = ({ children }: { children: ReactNode }) => {
     isLoggedIn: false,
     user: undefined,
   });
+  
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -70,6 +71,8 @@ const AppContext = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
+    if(!user.isLoggedIn) return
+
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_BackendURL}/api/user/logout`,

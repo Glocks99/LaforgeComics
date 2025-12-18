@@ -100,11 +100,11 @@ const getComicById = async (req, res) => {
     const comic = await incrementViews(req, comicId);
 
     if (!comic)
-      return res.status(404).json({ success: false, msg: "Comic not found" });
+      return res.json({ success: false, msg: "Comic not found" });
 
     res.json({ success: true, msg: comic });
   } catch (err) {
-    res.status(500).json({ success: false, msg: err.message });
+    res.json({ success: false, msg: err.message });
   }
 };
 

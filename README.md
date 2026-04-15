@@ -1,9 +1,3 @@
-I checked your repo: LaforgeComics
-
-Here’s a **professional, MLH Fellowship–ready README** you can copy and paste 👇
-
----
-
 # 📚 LaforgeComics
 
 A modern web-based platform for discovering, reading, and managing comics, built with a focus on performance, scalability, and user experience.
@@ -157,26 +151,14 @@ This project was built to showcase:
 * Full-stack development skills
 * Clean and scalable architecture
 * Real-world problem solving
-* Readiness for collaborative environments like the MLH Fellowship
+* For creatives in africa who are into comics
 
 ---
 
 ## 🔗 Live Demo (Optional)
 
-*Add your deployed link here (Vercel, Netlify, etc.)*
+*[Add your deployed link here (Vercel, Netlify, etc.)](https://laforge-comics.vercel.app/)*
 
----
-
-💡 **Tip:**
-Before submitting for MLH, add:
-
-* Screenshots (very important 🔥)
-* Live demo link
-* API documentation (if possible)
-
----
-
-If you want, I can:
 
 * 🔥 Add **badges (GitHub stats, tech icons)**
 * 🎨 Make it **more visually impressive**

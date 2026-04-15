@@ -9,6 +9,7 @@ A modern web-based platform for discovering, reading, and managing comics, built
 LaforgeComics is a full-stack web application dedicated to showcasing the vibrant world of African storytelling through digital comics. Designed as a bridge between talented creators and a global audience, the platform provides a seamless, immersive experience for exploring diverse narratives, folklore, and contemporary African art.
 
 This project demonstrates a commitment to cultural tech-stewardship and high-performance web development, featuring a scalable architecture built to handle high-resolution visual storytelling.
+
 ---
 
 ## ✨ Features
@@ -37,7 +38,7 @@ This project demonstrates a commitment to cultural tech-stewardship and high-per
 
 ### Database
 
-* MongoDB (or your preferred database)
+* MongoDB
 
 ### Other Tools
 

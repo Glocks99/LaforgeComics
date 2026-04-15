@@ -9,7 +9,7 @@ const {
 } = require("../controllers/artist");
 const { makeUploader } = require("../config/cloudinary");
 
-// ✅ create Cloudinary uploader that mirrors your old folder
+//  create Cloudinary uploader that mirrors your old folder
 const upload = makeUploader("artists");
 
 // ROUTES
@@ -17,7 +17,7 @@ router.get("/", getArtists);
 router.get("/random", getRandomArtist);
 router.get("/:id", getArtistById);
 
-// ✅ Create artist with image + coverImage
+//  Create artist with image + coverImage
 router.post(
   "/create",
   upload.fields([
@@ -27,7 +27,7 @@ router.post(
   createArtist
 );
 
-// ✅ Update artist with image + coverImage
+//  Update artist with image + coverImage
 router.put(
   "/update/:id",
   upload.fields([
@@ -37,7 +37,7 @@ router.put(
   updateArtist
 );
 
-// ✅ Delete artist
+//  Delete artist
 router.delete("/delete/:id", deleteArtist);
 
 module.exports = router;

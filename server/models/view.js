@@ -10,13 +10,13 @@ const viewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ Unique by (user + comic) only if user exists
+//  Unique by (user + comic) only if user exists
 viewSchema.index(
   { user: 1, comic: 1 },
   { unique: true, partialFilterExpression: { user: { $exists: true, $ne: null } } }
 );
 
-// ✅ Unique by (ip + comic) only if ip exists
+//  Unique by (ip + comic) only if ip exists
 viewSchema.index(
   { ip: 1, comic: 1 },
   { unique: true, partialFilterExpression: { ip: { $exists: true, $ne: null } } }

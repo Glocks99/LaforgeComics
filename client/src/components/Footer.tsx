@@ -29,9 +29,8 @@ const Footer = () => {
             />
             <p>LaForge</p>
           </div>
-          <p className="text-sm leading-relaxed">
-            Your ultimate hub for comics, manga, and webtoons from every genre
-            and creator around the globe. Join the adventure today!
+          <p className="text-xs leading-relaxed">
+            From ancestral legends to Afro-futurist epics, discover the pulse of a continent's imagination in every chapter.
           </p>
         </div>
 

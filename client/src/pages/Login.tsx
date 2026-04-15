@@ -6,6 +6,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
+import { Loader } from "lucide-react";
+import { useState } from "react";
 
 type yupSchema = {
   email: string;
@@ -13,6 +15,8 @@ type yupSchema = {
 };
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false)
+
   const schema = yup.object().shape({
     email: yup.string().email("Invalid email").required("Email is required"),
     password: yup
@@ -28,6 +32,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onsubmit = async (yupData: yupSchema) => {
+    setIsLoading(true)
     try {
       const { data } = await axios.post(
         `${import.meta.env.VITE_BackendURL}/api/user/login`,
@@ -41,10 +46,12 @@ const Login = () => {
         setUser({ isLoggedIn: true, user: data.user });
         setTimeout(() => navigate("/"), 1000);
       } else {
+        setIsLoading(false)
         toast.error(data.msg);
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error.message);
+      setIsLoading(false)
     }
   };
 
@@ -126,9 +133,10 @@ const Login = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition text-center"
+            className="w-full flex items-center cursor-pointer justify-center gap-1 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md font-medium transition text-center"
           >
-            Login
+            {isLoading && <Loader className="animate-spin" size={18} />}
+            {isLoading ? 'Login...' : 'Login'}
           </button>
 
           {/* Signup link */}

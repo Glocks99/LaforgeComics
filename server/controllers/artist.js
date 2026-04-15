@@ -198,7 +198,7 @@ const getRandomArtist = async (req, res) => {
         // If you want to use the id passed (req.params.id) to *narrow down*, you can add conditions here
         const count = await Artist.countDocuments();
         if (count === 0) {
-            return res.json({ message: "No artists available" });
+            return res.json({ success: true, msg: "No artists available" });
         }
 
         // Generate random skip

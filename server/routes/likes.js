@@ -10,24 +10,24 @@ const {
   getAllLikesForAdmin
 } = require("../controllers/likes");
 
-// ✅ Toggle like/unlike
+//  Toggle like/unlike
 router.post("/", toggleLike);
 
-// ✅ Get all likes (admin/debug)
+//  Get all likes (admin/debug)
 router.get("/", getAllLikesForAdmin);
 
 router.get("/all", getAllLikes);
 
-// ✅ Get likes for a specific comic
+//  Get likes for a specific comic
 router.get("/comic/:comicId", getLikesForComic);
 
-// ✅ Get all likes by a specific user
+//  Get all likes by a specific user
 router.get("/user/:userId", getLikesByUser);
 
-// ✅ Check if a user liked a specific comic
+//  Check if a user liked a specific comic
 router.get("/check/:userId/:comicId", checkUserLike);
 
-// ✅ Delete a like (used for unlike)
+//  Delete a like (used for unlike)
 router.delete("/:comicId", deleteLike);
 
 module.exports = router;

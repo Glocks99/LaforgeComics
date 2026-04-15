@@ -1,7 +1,7 @@
 const Like = require("../models/likes");
 const Comic = require("../models/comics");
 
-// ✅ Toggle like/unlike for a comic
+//  Toggle like/unlike for a comic
 const toggleLike = async (req, res) => {
   try {
     const { userId, comicId } = req.body;
@@ -39,7 +39,7 @@ const toggleLike = async (req, res) => {
   }
 };
 
-// ✅ Get all likes for a specific comic
+//  Get all likes for a specific comic
 const getLikesForComic = async (req, res) => {
   try {
     const { comicId } = req.params;
@@ -50,7 +50,7 @@ const getLikesForComic = async (req, res) => {
   }
 };
 
-// ✅ Check if a user liked a specific comic (for persistence)
+//  Check if a user liked a specific comic (for persistence)
 const checkUserLike = async (req, res) => {
   try {
     const { userId, comicId } = req.params;
@@ -61,7 +61,7 @@ const checkUserLike = async (req, res) => {
   }
 };
 
-// ✅ Get all likes for a user (for likedComics persistence)
+//  Get all likes for a user (for likedComics persistence)
 const getLikesByUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -75,7 +75,7 @@ const getLikesByUser = async (req, res) => {
   }
 };
 
-// ✅ Delete like explicitly (used by your DELETE request)
+//  Delete like explicitly (used by your DELETE request)
 const deleteLike = async (req, res) => {
   try {
     const { comicId } = req.params;
@@ -93,7 +93,7 @@ const deleteLike = async (req, res) => {
   }
 };
 
-// ✅ Admin/debug route
+//  Admin/debug route
 const getAllLikesForAdmin = async (req, res) => {
   try {
     const likes = await Like.find().populate("user", "username").populate("comic", "name");

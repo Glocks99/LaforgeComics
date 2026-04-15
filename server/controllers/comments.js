@@ -1,6 +1,6 @@
 const Comment = require("../models/comment");
 
-// ✅ Create a new comment
+//  Create a new comment
 const createComment = async (req, res) => {
   try {
     const { userId, comicId, text } = req.body;
@@ -35,7 +35,7 @@ const createComment = async (req, res) => {
   }
 };
 
-// ✅ Update a comment (with ownership check)
+//  Update a comment (with ownership check)
 const updateComment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -56,7 +56,7 @@ const updateComment = async (req, res) => {
       });
     }
 
-    // ✅ Ownership check
+    //  Ownership check
     if (comment.user.toString() !== userId) {
       return res.status(403).json({
         success: false,
@@ -84,7 +84,7 @@ const updateComment = async (req, res) => {
   }
 };
 
-// ✅ Delete a comment (with ownership check)
+//  Delete a comment (with ownership check)
 const deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
@@ -105,7 +105,7 @@ const deleteComment = async (req, res) => {
       });
     }
 
-    // ✅ Ownership check
+    //  Ownership check
     if (comment.user.toString() !== userId) {
       return res.status(403).json({
         success: false,
@@ -129,7 +129,7 @@ const deleteComment = async (req, res) => {
   }
 };
 
-// ✅ (Optional) Get all comments (Admin/debug)
+//  (Optional) Get all comments (Admin/debug)
 const getAllComments = async (req, res) => {
   try {
     const comments = await Comment.find()
@@ -152,7 +152,7 @@ const getAllComments = async (req, res) => {
   }
 };
 
-// ✅ Get all comments for a specific comic
+//  Get all comments for a specific comic
 const getCommentsByComic = async (req, res) => {
   try {
     const { comicId } = req.params;
@@ -189,7 +189,7 @@ const getCommentsByComic = async (req, res) => {
   }
 };
 
-// ✅ Get total comments for a specific comic
+//  Get total comments for a specific comic
 const getTotalComments = async (req, res) => {
   try {
     const { comicId } = req.params;

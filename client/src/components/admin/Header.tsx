@@ -146,7 +146,7 @@ const Header = ({ title }: { title: string }) => {
 
   return (
     <header className="w-full mt-6 px-4 z-50 sticky top-3">
-      <div className="w-full flex items-center justify-between px-6 py-4 bg-white/30 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
+      <div className="w-full flex items-center justify-between text-black px-6 py-4 bg-white/30 backdrop-blur-md rounded-xl border border-white/20 shadow-sm">
         {/* Title & Greeting */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">

@@ -1,2 +1,2 @@
 # LaforgeComics
-site for african comics
+Hub for African Comic creators 🎨

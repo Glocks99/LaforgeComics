@@ -113,7 +113,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
       <div className="bg-white rounded-xl p-6 shadow-md max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">📚 Add Comic</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 text-black">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -121,7 +121,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
             </label>
             <input
               type="text"
-              className="w-full border p-2 rounded"
+              className="w-full border-b-2 border-black/20 p-2 rounded"
               placeholder="Enter comic title"
               value={comic.name}
               onChange={(e) => setComic({ ...comic, name: e.target.value })}
@@ -134,7 +134,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
               Description
             </label>
             <textarea
-              className="w-full border p-2 rounded"
+              className="w-full border-b-2 border-black/20 p-2 rounded"
               rows={4}
               placeholder="Enter a short description"
               value={comic.description}
@@ -150,7 +150,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
               Artist
             </label>
             <select
-              className="w-full border p-2 rounded"
+              className="w-full border-b-2 border-black/20 p-2 rounded"
               value={comic.author}
               onChange={(e) => setComic({ ...comic, author: e.target.value })}
             >
@@ -169,7 +169,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Genre
               </label>
-              <select className="w-full border p-2 rounded" onChange={(e) => setComic({...comic, genre: e.target.value})} name="" id="">
+              <select className="w-full border-b-2 border-black/20 p-2 rounded" onChange={(e) => setComic({...comic, genre: e.target.value})} name="" id="">
                 <option value="">select genre</option>
                 {genre.map(item => (
                   <option key={item.name} value={item._id}>{item.name}</option>
@@ -182,7 +182,7 @@ const AddComic = ({onclose}: {onclose: boolean}) => {
             </label>
             <input
               type="text"
-              className="w-full border p-2 rounded"
+              className="w-full border-b-2 border-black/20 p-2 rounded"
               value={comic.tags}
               placeholder="funny, slice of life..."
               onChange={(e) =>

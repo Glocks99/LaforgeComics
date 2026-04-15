@@ -159,8 +159,3 @@ This project was built to showcase:
 
 *[Add your deployed link here (Vercel, Netlify, etc.)](https://laforge-comics.vercel.app/)*
 
-
-* 🔥 Add **badges (GitHub stats, tech icons)**
-* 🎨 Make it **more visually impressive**
-* 📸 Add a **screenshots section**
-* ⚡ Tailor it specifically to **MLH reviewers (high impact version)**

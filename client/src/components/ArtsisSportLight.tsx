@@ -39,7 +39,7 @@ const ArtistSpotlight = () => {
   const getArtist = async () => {
     try {
       const { data } = await axios.get(`${import.meta.env.VITE_BackendURL}/api/artist/random`);
-      if (data.success) setArtist(data.msg);
+      if (data.success && data.msg !== "No artists available") setArtist(data.msg);
     } catch (error: any) {
       console.error("Error fetching artist:", error.message);
     } finally {
@@ -71,12 +71,12 @@ const ArtistSpotlight = () => {
   return (
     <section className={`${darkMode ? "bg-white" : "bg-gradient-to-tr from-[#111827]/80 to-[#1f2937]/80 border-t border-white/10"} mt-16 relative px-[16px] sm:px-[40px] py-12 rounded-t-3xl backdrop-blur-xl shadow-xl`}>
       <div className="max-w-7xl mx-auto">
-        <h2 className={`text-3xl sm:text-4xl font-extrabold ${darkMode ? "text-gray-800" : "text-white"} mb-10 text-center px-6 py-2 rounded-xl`}>
-          🎨 Artist Spotlight
+        <h2 className={`text-3xl sm:text-4xl font-extrabold ${darkMode ? "text-gray-800" : "text-white"} mb-10 px-6 py-2 rounded-xl`}>
+          Artist Spotlight
         </h2>
 
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          {/* 🎧 LEFT SIDE — Spotify-style Artist Card */}
+          {/* LEFT SIDE — Spotify-style Artist Card */}
           <div className="relative w-full h-[420px] rounded-3xl overflow-hidden shadow-xl border border-white/10 group">
             {isLoading ? (
               <Skeleton
@@ -95,65 +95,66 @@ const ArtistSpotlight = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/90" />
 
                 {/* Overlay Content */}
-                <div className="absolute bottom-6 left-6 flex items-end gap-6">
-                  {/* Avatar */}
-                  <img
-                    src={artist?.image || "/comicPlaceholder.png"}
-                    alt={artist?.name}
-                    className="hidden sm:block w-full h-32 object-cover border-1 border-white/10 shadow-lg"
-                  />
+                {artist !== null && (
+                  <div className="absolute bottom-6 left-6 flex items-end gap-6">
+                    <img
+                      src={artist?.image || "/comicPlaceholder.png"}
+                      alt={artist?.name}
+                      className="hidden sm:block w-full h-32 object-cover border-1 border-white/10 shadow-lg"
+                    />
 
-                  {/* Info */}
-                  <div className="w-full">
-                    <h3 className="text-3xl font-bold text-white drop-shadow-lg mb-1">
-                      {artist?.name}
-                    </h3>
-                    <p className="text-sm text-gray-300 mb-3 line-clamp-2">
-                      {artist?.bio}
-                    </p>
+                    {/* Info */}
+                    <div className="w-full">
+                      <h3 className="text-3xl font-bold text-white drop-shadow-lg mb-1">
+                        {artist?.name}
+                      </h3>
+                      <p className="text-sm text-gray-300 mb-3 line-clamp-2">
+                        {artist?.bio}
+                      </p>
 
-                    {/* Social Links */}
-                    <div className="flex items-center gap-3 mt-4">
-                      <a
-                        href={artist?.socialLinks.twitter || "#"}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2 rounded-full bg-white/10 border border-white/20 text-blue-400 hover:scale-110 hover:bg-white/20 transition"
+                      {/* Social Links */}
+                      <div className="flex items-center gap-3 mt-4">
+                        <a
+                          href={artist?.socialLinks.twitter || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 rounded-full bg-white/10 border border-white/20 text-blue-400 hover:scale-110 hover:bg-white/20 transition"
+                        >
+                          <Twitter size={18} />
+                        </a>
+                        <a
+                          href={artist?.socialLinks.instagram || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 rounded-full bg-white/10 border border-white/20 text-pink-400 hover:scale-110 hover:bg-white/20 transition"
+                        >
+                          <Instagram size={18} />
+                        </a>
+                        <a
+                          href={artist?.socialLinks.linkedin || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 rounded-full bg-white/10 border border-white/20 text-blue-500 hover:scale-110 hover:bg-white/20 transition"
+                        >
+                          <Linkedin size={18} />
+                        </a>
+                      </div>
+
+                      {/* View Profile */}
+                      <Link
+                        to={`/artist/${artist?._id}`}
+                        className="inline-block mt-5 text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 border border-white/20 rounded-lg px-3 py-1 backdrop-blur-sm hover:scale-105 transition"
                       >
-                        <Twitter size={18} />
-                      </a>
-                      <a
-                        href={artist?.socialLinks.instagram || "#"}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2 rounded-full bg-white/10 border border-white/20 text-pink-400 hover:scale-110 hover:bg-white/20 transition"
-                      >
-                        <Instagram size={18} />
-                      </a>
-                      <a
-                        href={artist?.socialLinks.linkedin || "#"}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-2 rounded-full bg-white/10 border border-white/20 text-blue-500 hover:scale-110 hover:bg-white/20 transition"
-                      >
-                        <Linkedin size={18} />
-                      </a>
+                        View Full Profile →
+                      </Link>
                     </div>
-
-                    {/* View Profile */}
-                    <Link
-                      to={`/artist/${artist?._id}`}
-                      className="inline-block mt-5 text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500 border border-white/20 rounded-lg px-3 py-1 backdrop-blur-sm hover:scale-105 transition"
-                    >
-                      View Full Profile →
-                    </Link>
                   </div>
-                </div>
+                )}
               </>
             )}
           </div>
 
-          {/* 🎨 RIGHT SIDE — Works (Same as Before) */}
+          {/* RIGHT SIDE — Works (Same as Before) */}
           <div className="flex flex-col gap-4 mt-6 overflow-hidden">
             <h4 className="text-yellow-300 text-lg tracking-wide font-semibold">
               Featured Works

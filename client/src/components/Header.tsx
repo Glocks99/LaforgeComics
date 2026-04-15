@@ -165,9 +165,13 @@ const Header = () => {
             alt="LaForge Logo"
             className="h-10 w-10 object-contain drop-shadow"
           />
-          <p className="font-bold text-2xl sm:text-4xl tracking-wide">
-            LaForge
-          </p>
+
+          <div className="">
+            <p className="font-bold text-2xl sm:text-4xl tracking-wide">
+              LaForge
+            </p>
+            <p className="text-xs text-white/35 font-light">Hub for African Comics</p>
+          </div>
         </div>
 
         {/* Right: Dark Mode & Search */}

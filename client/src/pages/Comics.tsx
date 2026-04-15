@@ -47,7 +47,7 @@ const Comics = () => {
   const userId = user?.user?.id || parsedUser?._id || parsedUser?.id || null;
 
 
-  // ✅ Fetch all comics
+  //  Fetch all comics
   const getAllComics = async () => {
   try {
     const [comicRes, likeMap] = await Promise.all([
@@ -87,7 +87,7 @@ const Comics = () => {
 };
 
 
-  // ✅ Fetch liked comics for current user
+  //  Fetch liked comics for current user
   const getUserLikes = async () => {
     try {
       if (!userId) return;
@@ -107,7 +107,7 @@ const Comics = () => {
     getUserLikes(); 
   }, []);
 
-  // ✅ Run only when userId becomes available
+  //  Run only when userId becomes available
   useEffect(() => {
     if (userId) {
       getUserLikes();
@@ -121,8 +121,8 @@ const Comics = () => {
   const handlePrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
-  // ✅ Handle like/unlike
-// ✅ Handle like/unlike
+  //  Handle like/unlike
+//  Handle like/unlike
 const handleLike = async (comicId: string) => {
   if (!userId) {
     toast.error("Please login to like comics.");
@@ -152,7 +152,7 @@ const handleLike = async (comicId: string) => {
     });
 
     if (data.success) {
-      // ✅ Sync backend count and liked status
+      //  Sync backend count and liked status
       setLikedComics((prev) =>
         data.liked
           ? [...new Set([...prev, comicId])]
@@ -189,7 +189,7 @@ const handleLike = async (comicId: string) => {
 };
 
 
-  // ✅ Share comic
+  //  Share comic
   const handleShare = async (comic: Comic) => {
     const url = `${window.location.origin}/comic_detail/${comic._id}`;
     const text = `Check out "${comic.name}" on our comics site!`;
@@ -242,7 +242,7 @@ const handleLike = async (comicId: string) => {
       <main className="mt-12 px-4 sm:px-10 pb-5">
         <section className="max-w-7xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400 mb-8 drop-shadow">
-            📚 Trending Comics
+            Trending Comics
           </h1>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

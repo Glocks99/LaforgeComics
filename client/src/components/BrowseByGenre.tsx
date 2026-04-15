@@ -86,7 +86,7 @@ const BrowseByGenre = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <h2 className={`${darkMode ? "text-gray-800" : "text-white"} text-3xl sm:text-4xl font-extrabold drop-shadow`}>
-            📚 Browse by Genre
+            Browse by Genre
           </h2>
           <Link
             to="/comics"

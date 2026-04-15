@@ -28,7 +28,7 @@ export default function RatingCard({ comicId, userId }: RatingCardProps) {
 
   const { setIsRatingOpen, isRatingOpen } = useAppContext();
 
-  // ✅ Fetch user's previous rating for this comic (if any)
+  //  Fetch user's previous rating for this comic (if any)
   useEffect(() => {
     const fetchExistingRating = async () => {
       try {
@@ -46,7 +46,7 @@ export default function RatingCard({ comicId, userId }: RatingCardProps) {
     fetchExistingRating();
   }, [userId, comicId]);
 
-  // ✅ Submit rating
+  //  Submit rating
   const handleSubmit = async () => {
     if (!score) {
       toast.error("Please select a star rating before submitting.");

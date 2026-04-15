@@ -12,12 +12,12 @@ const createOrUpdateRating = async (req, res) => {
     const { score, comicId } = req.body;
     const { userId } = req.params;
 
-    // ✅ Validate input
+    //  Validate input
     if (!score || !comicId || !userId) {
       return res.status(400).json({ success: false, msg: "Missing required fields" });
     }
 
-    // ✅ Check if the user has already rated this comic
+    //  Check if the user has already rated this comic
     let rating = await Rating.findOne({ user: userId, item: comicId });
 
     if (rating) {
@@ -33,13 +33,13 @@ const createOrUpdateRating = async (req, res) => {
       });
     }
 
-    // ✅ Calculate new average rating for the comic
+    //  Calculate new average rating for the comic
     const avgResult = await Rating.aggregate([
       { $match: { item: new mongoose.Types.ObjectId(comicId) } },
       { $group: { _id: "$item", avgScore: { $avg: "$score" }, count: { $sum: 1 } } },
     ]);
 
-    // ✅ Update comic’s avgRating field if aggregation worked
+    //  Update comic’s avgRating field if aggregation worked
     if (avgResult.length > 0) {
       await Comic.findByIdAndUpdate(comicId, { avgRating: avgResult[0].avgScore });
     }

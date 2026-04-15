@@ -154,7 +154,7 @@ const updateEpisode = async (req, res) => {
       newImagePaths = files.map((file) => basePath + file.filename);
     }
 
-    // ✅ Update only what was provided
+    //  Update only what was provided
     if (title) episode.title = title;
     if (episodeNumber) episode.episodeNumber = episodeNumber;
     if (typeof isLocked !== "undefined") {

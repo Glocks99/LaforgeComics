@@ -3,18 +3,17 @@ import { useAppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 
 const creatorData = {
-  name: "Rockson",
-  image:
-    "",
-  bio: `Hi! I'm Rockson, a passionate comic enthusiast, developer, and digital artist. 
+  name: "James",
+  image: "creator.jpg",
+  bio: `Hi! I'm James Larbie, a passionate comic enthusiast and  developer. 
   I built this platform to celebrate diverse storytelling through webcomics, manga, 
-  and to give African creators a place to shine. When I’m not coding or drawing, 
+  and to give African creators a place to shine. When I’m not coding or watching anime, 
   I’m binge-reading graphic novels and sipping iced coffee.`,
   socials: [
-    { icon: <Twitter size={18} />, label: "Twitter", url: "https://twitter.com" },
-    { icon: <Instagram size={18} />, label: "Instagram", url: "https://instagram.com" },
-    { icon: <Github size={18} />, label: "GitHub", url: "https://github.com" },
-    { icon: <Mail size={18} />, label: "Email", url: "mailto:rockson@example.com" },
+    { icon: <Twitter size={18} />, label: "Twitter", url: "https://twitter.com/jameslarbie07" },
+    { icon: <Instagram size={18} />, label: "Instagram", url: "https://instagram.com/jameslarbie30" },
+    { icon: <Github size={18} />, label: "GitHub", url: "https://github.com/Glocks99" },
+    { icon: <Mail size={18} />, label: "Email", url: "mailto:jameslarbie30@gmail.com" },
   ],
 };
 

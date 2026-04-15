@@ -57,7 +57,7 @@ const LatestUpdates = () => {
     <section className={`${darkMode ? "bg-white" : "bg-[#1c2533]"} mt-16 px-4 sm:px-8 py-12 rounded-t-3xl shadow-inner`}>
       <div className="max-w-7xl mx-auto">
         <h2 className={`${darkMode ? "text-gray-800" : "text-white"} text-3xl sm:text-4xl font-extrabold mb-8 drop-shadow`}>
-          🔥 Latest Updates
+          Latest Updates
         </h2>
 
         {/* Cards */}

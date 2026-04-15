@@ -84,7 +84,7 @@ const incrementViews = async (req, comicId) => {
       await Comic.findByIdAndUpdate(comicId, { $inc: { views: 1 } });
     }
 
-    // ✅ Always return the comic data (even if not incremented)
+    //  Always return the comic data (even if not incremented)
     const comic = await Comic.findById(comicId).populate("author genre", "-_id name").populate("episodes");
     return comic;
   } catch (err) {
@@ -93,7 +93,7 @@ const incrementViews = async (req, comicId) => {
   }
 };
 
-// ✅ Controller
+//  Controller
 const getComicById = async (req, res) => {
   try {
     const comicId = req.params.id;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { ChevronLeft, HeartCrack, Loader2 } from "lucide-react";
+import { ChevronLeft, Heart, HeartCrack, Loader2, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
@@ -26,7 +26,7 @@ const Favourites = () => {
 
   const navigate = useNavigate()
 
-  // ✅ Fetch all comics & their likes
+  //  Fetch all comics & their likes
   const getAllComics = async () => {
     try {
       const [comicRes, likeMap] = await Promise.all([
@@ -48,7 +48,7 @@ const Favourites = () => {
     }
   };
 
-  // ✅ Map of comicId → totalLikes
+  //  Map of comicId → totalLikes
   const getAllComicsLikes = async () => {
     try {
       const { data } = await axios.get(
@@ -66,7 +66,7 @@ const Favourites = () => {
     return {};
   };
 
-  // ✅ Fetch user liked comics
+  //  Fetch user liked comics
   const getUserLikes = async () => {
     try {
       if (!userId) return;
@@ -116,7 +116,7 @@ const Favourites = () => {
             Back
         </div>
       <h1 className="text-3xl font-bold text-gray-300 mb-8 text-center">
-        ❤️ Your Favourite Comics
+        Your Favourite Comics
       </h1>
 
       {isLoading ? (
@@ -151,8 +151,8 @@ const Favourites = () => {
                   {comic.description}
                 </p>
                 <div className="flex items-center justify-between text-sm mt-3 text-gray-200">
-                  <span>👤 {comic.author?.name || "Unknown"}</span>
-                  <span>❤️ {comic.likeCount || 0}</span>
+                  <span> <User size={18}/> {comic.author?.name || "Unknown"}</span>
+                  <span><Heart color="red" /> {comic.likeCount || 0}</span>
                 </div>
               </div>
             </Link>

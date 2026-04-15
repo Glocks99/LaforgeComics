@@ -87,19 +87,16 @@ const FeaturedStories = () => {
           data-aos="fade-up"
         >
           <h2 className="text-2xl sm:text-3xl font-semibold text-gray-100 mb-4">
-            Discover Stories Curated for You
+            Discover Tales Born from Our Soil
           </h2>
           <p className="text-gray-300 text-sm sm:text-base leading-relaxed">
-            Every comic featured here brings you closer to a universe full of
-            breathtaking adventures, timeless heroes, and unforgettable moments.
-            Join thousands of readers discovering handpicked tales from around
-            the world, updated every week just for you.
+            Every panel featured here draws you closer to a continent of vibrant legends, futuristic kingdoms, and spirits that refuse to be forgotten. Join a growing community of readers discovering handpicked stories from Lagos to Nairobi, Cape Town to Cairo—updated every week to keep the rhythm of our storytelling alive.
           </p>
           <Link
             to={"/feed"}
             className="inline-block mt-6 text-blue-500 font-medium hover:underline"
           >
-            Start Exploring →
+            Begin Your Journey →
           </Link>
         </div>
       </div>

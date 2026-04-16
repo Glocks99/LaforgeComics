@@ -156,6 +156,14 @@ This project was built to showcase:
 ---
 
 ## 🔗 Live Demo
+Check out the live demo 
+*[HERE](https://laforge-comics.vercel.app/)*
 
-*[Add your deployed link here (Vercel, Netlify, etc.)](https://laforge-comics.vercel.app/)*
+OR
+>`https://laforge-comics.vercel.app/`
 
+
+## Screenshots
+![alt text](sample-1-responsive.png)
+
+![alt text](sample-1.png)![alt text](sample-profiles.png)![alt text](tiktok-sample.png)

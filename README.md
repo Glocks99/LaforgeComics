@@ -157,28 +157,15 @@ This project was built to showcase:
 * Full-stack development skills
 * Clean and scalable architecture
 * Real-world problem solving
-* Readiness for collaborative environments like the MLH Fellowship
+* Make African comic creators heard and projected more
 
 ---
 
-## 🔗 Live Demo (Optional)
+## 🔗 Live Demo
 
-*Add your deployed link here (Vercel, Netlify, etc.)*
+`https://laforge-comics.vercel.app/`
 
+
+![alt text](sample-1.png) ![alt text](sample-1-responsive.png) ![ ](sample-profiles.png)
+![alt text](tiktok-sample.png)
 ---
-
-💡 **Tip:**
-Before submitting for MLH, add:
-
-* Screenshots (very important 🔥)
-* Live demo link
-* API documentation (if possible)
-
----
-
-If you want, I can:
-
-* 🔥 Add **badges (GitHub stats, tech icons)**
-* 🎨 Make it **more visually impressive**
-* 📸 Add a **screenshots section**
-* ⚡ Tailor it specifically to **MLH reviewers (high impact version)**

@@ -520,7 +520,7 @@ const ComicsTable: React.FC = () => {
 
       {/* Edit Comic Modal */}
       {editComic && (
-        <div className="fixed inset-0 z-50 bg-white/10 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 text-black bg-white/10 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-md p-6 relative">
             <button onClick={() => setEditComic(null)} className="absolute top-4 right-4 text-gray-500"><X /></button>
             <h3 className="text-xl font-semibold mb-4">Edit Comic</h3>

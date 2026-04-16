@@ -289,7 +289,7 @@ const ArtistManager: React.FC = () => {
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">🎨 Artist Manager</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Artist Manager</h1>
           <p className="text-sm text-gray-500">Manage artists and their works</p>
         </div>
 
@@ -317,7 +317,7 @@ const ArtistManager: React.FC = () => {
         <p className="text-center text-gray-500">No artists found.</p>
       ) : (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 text-black">
             {currentArtists.map((artist) => (
               <div key={artist._id} className="bg-white rounded-2xl shadow-md overflow-hidden group">
                 <div className="relative">
@@ -350,8 +350,8 @@ const ArtistManager: React.FC = () => {
                 <div className="p-4">
                   <p className="text-sm text-gray-700 line-clamp-3">{artist.bio}</p>
                   <div className="mt-3 flex gap-3 items-center text-sm text-gray-600">
-                    {artist.email && <div className="flex items-center gap-2"><Mail className="text-indigo-600" /><span>{artist.email}</span></div>}
-                    {artist.phone && <div className="flex items-center gap-2"><Phone className="text-indigo-600" /><span>{artist.phone}</span></div>}
+                    {artist.email && <div className="flex items-center gap-2"><Mail size={18} className="text-indigo-600" /><span>{artist.email}</span></div>}
+                    {artist.phone && <div className="flex items-center gap-2"><Phone size={18} className="text-indigo-600" /><span>{artist.phone}</span></div>}
                   </div>
                 </div>
               </div>
@@ -428,7 +428,7 @@ const ArtistManager: React.FC = () => {
 
       {/* Add/Edit modal */}
       {editArtist && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-start justify-center z-50 p-4 pt-10 overflow-auto">
+        <div className="fixed inset-0 text-black bg-black/40 backdrop-blur-sm flex items-start justify-center z-50 p-4 pt-10 overflow-auto">
           <form onSubmit={handleFormSubmit} className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4 relative">
             <button type="button" onClick={() => { setEditArtist(null); setImagePreview(null); setCoverPreview(null); setImageFile(null); setCoverFile(null); }} className="absolute top-4 right-4 text-gray-500"><X /></button>
             <h2 className="text-xl font-semibold">{editArtist._id ? "Edit Artist" : "Add Artist"}</h2>

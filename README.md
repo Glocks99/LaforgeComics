@@ -164,6 +164,7 @@ OR
 
 
 ## Screenshots
-![alt text](sample-1-responsive.png)
+<img width="1344" height="643" alt="sample-1" src="https://github.com/user-attachments/assets/850800e1-7498-4cd9-b376-2129cabc242b" /><img width="1357" height="646" alt="tiktok-sample" src="https://github.com/user-attachments/assets/2863835d-f8a8-41c2-93a7-d3789191dcac" />
+<img width="309" height="555" alt="sample-profiles" src="https://github.com/user-attachments/assets/e47930f7-bbfb-495d-968c-31d7fab11bff" />
+<img width="308" height="550" alt="sample-1-responsive" src="https://github.com/user-attachments/assets/a5428c5d-79ec-4ba7-b0bc-b9d909dd2e83" />
 
-![alt text](sample-1.png)![alt text](sample-profiles.png)![alt text](tiktok-sample.png)

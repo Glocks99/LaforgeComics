@@ -22,7 +22,6 @@ import AdminBlog from "./pages/admin/Blogs"
 import Artist from "./pages/admin/Artist";
 import ArtistDetail from "./components/ArtistDetail";
 import Analytics from "./pages/admin/Analytics";
-import ComicPage from "./components/ComicPage"
 import FeedDetail from "./pages/FeedDetail";
 import Favourites from "./pages/Favourites";
 import Settings from "./pages/Settings";
@@ -67,7 +66,7 @@ function App() {
         <Route path="/more" element={<More />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/pages/:id" element={<ComicPage />} />
+        {/* <Route path="/pages/:id" element={<ComicPage />} /> */}
         <Route path="artist/:id" element={<ArtistDetail />} />
         <Route path="/feed" element={<FeedDetail />} />
         <Route path="/likes" element={<Favourites />} />

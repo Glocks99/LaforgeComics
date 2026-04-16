@@ -218,7 +218,7 @@ const Header = ({ title }: { title: string }) => {
                 name="logo"
                 id="logo"
                 accept="image/*"
-                className="w-full p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full text-black p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
@@ -260,7 +260,7 @@ const Header = ({ title }: { title: string }) => {
                 name="contentRated"
                 placeholder="e.g. PG-13, R"
                 required
-                className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full text-black p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
 
@@ -278,7 +278,7 @@ const Header = ({ title }: { title: string }) => {
             </div>
 
             {/* Comic Select */}
-            <div className="space-y-2">
+            <div className="space-y-2 text-black">
               <label className="flex items-center gap-2 font-medium text-gray-700">
                 <BookOpen size={18} /> Select Comic
               </label>

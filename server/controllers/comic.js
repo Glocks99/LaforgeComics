@@ -140,7 +140,7 @@ const deleteComic = async (req, res) => {
     ]);
 
     // --- CLEAN UP CLOUDINARY FILES ---
-    // 1️⃣ Delete cover image from Cloudinary
+    // Delete cover image from Cloudinary
     if (comic.coverImage) {
       try {
         // Extract public_id from URL (example: https://res.cloudinary.com/demo/image/upload/v123456789/comics/my-image.jpg)
@@ -153,7 +153,7 @@ const deleteComic = async (req, res) => {
       }
     }
 
-    // 2️⃣ Delete episode images (if any)
+    // Delete episode images (if any)
     const episodes = await Episode.find({ comic: comic._id });
     for (const ep of episodes) {
       if (ep.images && Array.isArray(ep.images)) {

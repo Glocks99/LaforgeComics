@@ -155,7 +155,7 @@ This project was built to showcase:
 
 ---
 
-## 🔗 Live Demo (Optional)
+## 🔗 Live Demo
 
 *[Add your deployed link here (Vercel, Netlify, etc.)](https://laforge-comics.vercel.app/)*
 
